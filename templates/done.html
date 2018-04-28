@@ -1,0 +1,97 @@
+{% extends "default.html" %}
+
+{% block stylesheets %}
+    {{ super()  }}
+    <style>
+        .done-buttons {
+            margin-top: 100px;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block javascripts %}
+    {{ super() }}
+{% endblock javascripts %}
+
+{% block container %}
+{{ super() }}
+<h2>Step {{ step }}: <span>Done!</span></h2>
+<div class="row">
+    <div class="col-md-12">
+        <hr/>
+        <h4 class="text-center summary-title">Best model results</h4>
+        <hr/>
+        <table class="summary-table">
+            <tr>
+                <th colspan="2"></th>
+                <th colspan="2" class="border-bottom">Dependent variable: {{ data.depvar }}</th>
+            </tr>
+            
+            <tr>
+                <td colspan="4"></td>
+            </tr>
+            <tr class="border-bottom">
+                <td colspan="2">Selected covariates:</td>
+                <td >Coef.</td>
+                <td >t-test</td>
+            </tr>
+            {% for expvar in data.expvars %}
+                {% if summary[expvar+"_b"] is defined and summary[expvar+"_b"] is not none %}
+                    <tr>
+                        <td colspan="2">{{ expvar }}</td>
+                        <td >{{ summary[expvar+"_b"] | round(7) }}</td>
+                        <td >{{ summary[expvar+"_t"] | round(7) }}</td>
+                    </tr>   
+                {% endif %}
+            {% endfor %}
+            {% if data.intercept %}
+                <tr>
+                    <td colspan="2">_cons</td>
+                    <td >{{ summary["_cons_b"] | round(7) }}</td>
+                    <td >{{ summary["_cons_t"] | round(7) }}</td>
+                </tr>
+            {% endif %}
+            <tr class="border-top">
+                <td colspan="2">Observations</td>
+                <td>{{ summary["nobs"]|round|int }}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="2">Adjusted R²</td>
+                <td>{{ summary["r2adj"]|round(7) }}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="2">F-statistic </td>
+                <td>{{ summary["F"]|round(7) }}</td>
+                <td></td>
+            </tr>
+            {% for criteria in data.criteria %}
+                {% if summary[criteria] is defined and summary[criteria] is not none and criteria != "r2adj" %}
+                    <tr>
+                        <td colspan="2">{{ data.criteria_title(criteria) }}</td>
+                        <td >{{ summary[criteria] | round(7) }}</td>
+                    </tr>   
+                {% endif %}
+            {% endfor %}
+            <tr class="border-top">
+                <td colspan="4"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <small>A CSV file with all-subsets results has been saved at:</small><br/>
+        <small>{{ output_file }}</small>
+    </div>
+</div>
+<div class="row done-buttons">
+    <div class="col-md-6 text-left">
+        <a href="Backend.select_csv" id="link" data-bind="true" class="btn btn-lg bg-blue text-white">Restart</a>
+    </div>
+    <div class="col-md-6 text-right">
+        <a href="Backend.exit_program" id="link" data-bind="true" class="btn btn-lg bg-blue text-white">Exit</a>
+    </div>
+</div>
+{% endblock %}

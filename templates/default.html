@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% set step_progress = (step-1)*100/steps %}
+
+{% block container %}
+<div class="progress">
+    <div class="progress-bar progress-bar-striped active bg-red" role="progressbar" aria-valuenow="{{ step_progress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ step_progress }}%">
+        <span class="sr-only">{{ step_progress }}% Complete</span>
+    </div>
+</div>
+{% endblock %}
