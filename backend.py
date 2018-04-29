@@ -14,44 +14,46 @@ class Backend(htmlPy.Object):
     # GUI callable functions have to be inside a class.
     # The class should be inherited from htmlPy.Object.
 
-    JULIA_BINARY = "julia"
-    JULIA_MIN_VER = int("062")
+    TITLE = u'GSReg for Julia'
+    JULIA_MIN_VER = int('062')
+    OUTPUT_FILE_PREFIX = '_gsreg_results_'
+    STEPS = 4
+    JULIA_BINARY_FILE = 'JULIA_BINARY'
+    GSREG_SCRIPT_FILE = 'gsreg_script.jl'
     AVAILABLE_CRITERIA = [
         {
-            "name": "r2adj",
-            "title": "Adjusted R2",
+            'name': 'r2adj',
+            'title': 'Adjusted R2',
         },
         {
-            "name": "bic",
-            "title": "BIC",
+            'name': 'bic',
+            'title': 'BIC',
         },
         {
-            "name": "aic",
-            "title": "AIC",
+            'name': 'aic',
+            'title': 'AIC',
         },
         {
-            "name": "aicc",
-            "title": "AIC Corrected",
+            'name': 'aicc',
+            'title': 'AIC Corrected',
         },
         {
-            "name": "cp",
-            "title": "Mallows's Cp",
+            'name': 'cp',
+            'title': "Mallows's Cp",
         },
         {
-            "name": "rmse",
-            "title": "RMSE In",
+            'name': 'rmse',
+            'title': 'RMSE In',
         },
         {
-            "name": "rmseout",
-            "title": "RMSE Out",
+            'name': 'rmseout',
+            'title': 'RMSE Out',
         }
     ]
 
-    output_file_sufix = "_gsreg_results_"
+    julia_binary = 'julia'    
 
-    title = u'GSReg for Julia'
 
-    steps = 4
     step = 1
 
     working_directory = ''
@@ -77,9 +79,9 @@ class Backend(htmlPy.Object):
 
     def render(self, template, params={}):
         params.update({
-            'title': self.title,
+            'title': self.TITLE,
             'step': self.step, 
-            'steps': self.steps
+            'steps': self.STEPS
         })
         self.app.template = (template, params)
 
@@ -89,49 +91,49 @@ class Backend(htmlPy.Object):
     @htmlPy.Slot(str, result=str)
     def binary(self, json_data=None):
         form_data = json.loads(json_data)
-        self.JULIA_BINARY = form_data["binary"]    
+        self.julia_binary = form_data['binary']    
         
-        if self.JULIA_BINARY is not None and len(self.JULIA_BINARY) < 1:
+        if self.julia_binary is not None and len(self.julia_binary) < 1:
             return
 
-        if not self.julia_exists(self.JULIA_BINARY):
-            self.render("select_julia.html", {"alert": {
-                    "title": "Julia executable",
-                    "body": "Wrong selected executable "
+        if not self.julia_exists(self.app.script_path, self.julia_binary):
+            self.render('select_julia.html', {'alert': {
+                    'title': 'Julia executable',
+                    'body': 'Wrong selected executable '
                 }}
             )
             return
 
-        if not self.julia_version_check(self.JULIA_BINARY, self.JULIA_MIN_VER):
-            self.render("select_julia.html", {'alert': {
-                    "title": "Julia version",
-                    "body": "GSReg requires Julia version 0.6.2 or higher. Please update Julia."
+        if not self.julia_version_check(self.julia_binary, self.JULIA_MIN_VER):
+            self.render('select_julia.html', {'alert': {
+                    'title': 'Julia version',
+                    'body': 'GSReg requires Julia version 0.6.2 or higher. Please update Julia.'
                 }}
             )
             return
 
-        file = open("JULIA_BINARY", "w") 
-        file.write(self.JULIA_BINARY)
+        file = open(self.app.base_dir+'/'+self.JULIA_BINARY_FILE, 'w') 
+        file.write(self.julia_binary)
         file.close()
-        self.check_requirements(self.JULIA_BINARY)
+        self.check_requirements(self.julia_binary)
 
     @htmlPy.Slot()
-    def check_requirements(self, JULIA_BINARY=None):
-        if JULIA_BINARY is not None:
-            self.JULIA_BINARY = JULIA_BINARY
+    def check_requirements(self, julia_binary=None):
+        if julia_binary is not None:
+            self.julia_binary = julia_binary
         else:
-            self.JULIA_BINARY = self.app.JULIA_BINARY
+            self.julia_binary = self.app.julia_binary
 
-        self.finished = Value("B", False)
+        self.finished = Value('B', False)
         self.step = 0
-        self.render("requirements.html")
+        self.render('requirements.html')
 
         self.process = Process(target=self.run_check_requirements, args=(self.finished,))
         self.process.start()
 
     def run_check_requirements(self, finished):
-        cmd = self.JULIA_BINARY+' require_packages.jl'
-        print subprocess.call(cmd, shell=True)
+        cmd = self.julia_binary+' '+self.app.script_path+'julia/require_packages.jl'
+        subprocess.call(cmd, shell=False)
         finished.value = True
 
     @htmlPy.Slot(result=str)
@@ -141,11 +143,11 @@ class Backend(htmlPy.Object):
 
     @htmlPy.Slot()
     def select_csv(self, alert=None):
-        self.csv_filename = ""
+        self.csv_filename = ''
         self.fieldnames = None
         self.step = 1
-        self.render("select_csv.html", {
-            "alert": alert
+        self.render('select_csv.html', {
+            'alert': alert
         })
 
     @htmlPy.Slot(str, result=str)
@@ -169,7 +171,7 @@ class Backend(htmlPy.Object):
 
         self.working_directory = os.path.dirname(self.csv_filename)+'/'
         self.input_filename = os.path.basename(self.csv_filename)
-        self.output_filename = os.path.splitext(self.input_filename)[0]+self.output_file_sufix+datetime.datetime.now().strftime('%Y%m%d%H%M%S')+".csv"
+        self.output_filename = os.path.splitext(self.input_filename)[0]+self.OUTPUT_FILE_PREFIX+datetime.datetime.now().strftime('%Y%m%d%H%M%S')+'.csv'
 
         with open(self.csv_filename) as csvfile:
             reader = csv.DictReader(csvfile)
@@ -216,16 +218,16 @@ class Backend(htmlPy.Object):
             return
 
         if 'expvars' in form_data:
-            self.expvars = self.expvars.split(";")
+            self.expvars = self.expvars.split(';')
         else: 
-            self.expvars = ""       
+            self.expvars = ''       
 
-        self.depvar = self.depvar.replace(" ", "_")
+        self.depvar = self.depvar.replace(' ', '_')
         self.intercept = True if self.intercept == 'on' or self.intercept == True else False
         self.cpu_count = multiprocessing.cpu_count()
 
         self.step = 3
-        self.render("settings.html", {
+        self.render('settings.html', {
             'cpu_count': self.cpu_count,
             'available_criteria': self.AVAILABLE_CRITERIA,
             'observations_number': self.observations_number,
@@ -264,7 +266,7 @@ class Backend(htmlPy.Object):
             })
             return
 
-        self.criteria = self.criteria.split(";")
+        self.criteria = self.criteria.split(';')
         self.criteria_symbols = [':' + criteria for criteria in self.criteria]
 
         self.threads = form_data['threads'] if 'threads' in form_data else self.threads
@@ -281,44 +283,44 @@ class Backend(htmlPy.Object):
 
         self.execute()
         #self.step = 4
-        #self.render("output.html", {})
+        #self.render('output.html', {})
 
     @htmlPy.Slot(str, result=str)
     def execute(self, json_data=None):
-        self.finished = Value("B", False)
+        self.finished = Value('B', False)
 
         #form_data = json.loads(json_data)        
         #self.output_file = form_data['output']
         
         self.step = 4
-        self.render("execute.html", {})
+        self.render('execute.html', {})
 
         script = 'using CSV'+'\n'
         script+= 'using GSReg'+'\n'
         script+= 'data = CSV.read("'+self.csv_filename+'")'+'\n'
-        script+= 'GSReg.gsreg("'+self.depvar+' '+" ".join(self.expvars)+'"'
+        script+= 'GSReg.gsreg("'+self.depvar+' '+' '.join(self.expvars)+'"'
         script+= ', data'
         script+= ', intercept='+'true' if self.intercept else 'false'
         if self.outsample > 0:
             script+= ', outsample='+str(self.outsample)
         script+= ', samesample='+'true' if self.samesample else 'false'
         script+= ', criteria=['+', '.join(self.criteria_symbols)+']'
-        #script+= ', csv="'+self.output_file+'"'
+        #script+= ', csv=''+self.output_file+'''
         script+= ', csv="'+self.working_directory+self.output_filename+'"'
         script+= ', ttest=true'
         script+= ')'
         
-        file = open("gsreg_script.jl", "w") 
+        file = open(self.app.base_dir+'/'+self.GSREG_SCRIPT_FILE, 'w') 
         file.write(script)
-        file.close() 
+        file.close()
 
         self.process = Process(target=self.run_julia, args=(self.finished,))
         self.process.start()
         #self.done()
 
     def run_julia(self, finished):
-        cmd = 'JULIA_NUM_THREADS='+str(self.threads)+' '+self.JULIA_BINARY+' gsreg_script.jl'
-        print subprocess.call(cmd, shell=True)
+        cmd = 'JULIA_NUM_THREADS='+str(self.threads)+' '+self.julia_binary+' '+self.app.base_dir+'/'+self.GSREG_SCRIPT_FILE
+        subprocess.call(cmd, shell=False)
         finished.value = True
 
     @htmlPy.Slot(result=str)
@@ -328,7 +330,7 @@ class Backend(htmlPy.Object):
 
     @htmlPy.Slot()
     def done(self):
-        self.step=5
+        os.remove(self.app.base_dir+'/'+self.GSREG_SCRIPT_FILE)
         with open(self.working_directory+self.output_filename) as csvfile:
             reader = csv.DictReader(csvfile)
             summary = next(reader)
@@ -341,40 +343,41 @@ class Backend(htmlPy.Object):
                     summary[key] = None
             except Exception as e:
                 pass
-
-        self.render("done.html", {
-            "output_file": self.working_directory+self.output_filename,
-            "summary": summary,
-            "data": self
+        
+        self.step=5
+        self.render('done.html', {
+            'output_file': self.working_directory+self.output_filename,
+            'summary': summary,
+            'data': self
         })
 
     @htmlPy.Slot()
     def exit_program(self):
         self.app.stop()
-        self.app.exit()
 
     def criteria_title(self, name):
         for criteria in self.AVAILABLE_CRITERIA:
-            if criteria["name"] == name:
-                return criteria["title"]
+            if criteria['name'] == name:
+                return criteria['title']
 
     @staticmethod
-    def julia_exists(JULIA_BINARY=None):
-        if JULIA_BINARY is None:
-            JULIA_BINARY = "julia"
+    def julia_exists(script_path, julia_binary=None):
+        if julia_binary is None:
+            julia_binary = 'julia'
+        
         exists = False
         try:
-            exists = True if subprocess.call(["bash detect.sh "+JULIA_BINARY], shell=True) is 1 else False
+            exists = True if subprocess.call(['bash '+script_path+'bash/detect.sh '+julia_binary], shell=False) is 1 else False
         except Exception as e:
             exists = False
         return exists
 
     @staticmethod
-    def julia_version(JULIA_BINARY):
-        output = subprocess.check_output(JULIA_BINARY+" -v", shell=True)
-        output = int(output.replace("\n", "").replace(".", "").replace("julia version ", ""))
+    def julia_version(julia_binary):
+        output = subprocess.check_output(julia_binary+' -v', shell=False)
+        output = int(output.replace('\n', '').replace('.', '').replace('julia version ', ''))
         return output
 
     @staticmethod
-    def julia_version_check(JULIA_BINARY, JULIA_MIN_VER):
-        return Backend.julia_version(JULIA_BINARY) >= JULIA_MIN_VER
+    def julia_version_check(julia_binary, julia_min_ver):
+        return Backend.julia_version(julia_binary) >= julia_min_ver

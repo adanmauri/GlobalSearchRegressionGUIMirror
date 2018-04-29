@@ -1,0 +1,15 @@
+{% extends "default.html" %}
+
+{% block container %}
+{{ super() }}
+<h2>Step {{ step }}: <span>Checking requirements</span></h2>
+
+<div class="loading text-center">
+    <img src="{{ 'img/loading.gif'|staticfile }}" />
+</div>
+<script>
+    setInterval(function(){
+        Backend.check_requirements_is_done();
+    }, 3000);
+</script>
+{% endblock %}

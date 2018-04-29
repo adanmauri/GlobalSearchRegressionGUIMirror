@@ -1,0 +1,22 @@
+{% extends "default.html" %}
+
+{% block javascript %}
+    <script>
+    </script>
+{% endblock javascript %}
+
+{% block container %}
+{{ super() }}
+<h2>Step {{ step }}: <span>Load your database</span></h2>
+<form action="Backend.variables" id="form" data-bind="true">
+    <div class="form-group">
+        <label for="database">CSV file</label>
+        <div class="input-group">
+            <input type="file" id="database" name="database" class="form-control" required data-filter='[{"title": "CSV file", "extensions": "*.csv *.csv"}]' />
+        </div>
+    </div>
+    <div class="nav">
+        <button type="submit" class="btn btn-lg pull-right bg-green text-white">Next</button>
+    </div>
+</form>
+{% endblock %}

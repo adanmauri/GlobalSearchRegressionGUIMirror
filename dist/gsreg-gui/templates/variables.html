@@ -1,0 +1,95 @@
+{% extends 'default.html' %}
+
+{% block javascripts %}
+    {{ super() }}
+    <script>
+        $(document).ready(function() {
+            var depvarSelect = '#depvar_select';
+            var expvarsSelect = '#expvars_select';
+            var selectAllExpvarsButton = '#select_all_expvars';
+            selectAllExpvarsStatus = false;
+            $(depvarSelect).change(function() {
+                $(expvarsSelect).find("option").each(function() {
+                    $(this).prop('disabled', $(this).val() == $(depvarSelect).val());
+                    $(expvarsSelect).select2('destroy');
+                    $(expvarsSelect).select2();
+                    $(expvarsSelect).trigger("change");
+                });
+            });
+            $(depvarSelect).trigger("change");
+
+            $(expvarsSelect).change(function() {
+                if ($(expvarsSelect).find('option').length-1 == $(expvarsSelect).find('option:selected').length) {
+                    selectAllExpvarsStatus = true;
+                    $(selectAllExpvarsButton).text("Unselect all");
+                } else {
+                    selectAllExpvarsStatus = false;
+                    $(selectAllExpvarsButton).text("Select all");
+                }
+            });
+
+            $(selectAllExpvarsButton).click(function() {
+                selectAllExpvarsStatus = !selectAllExpvarsStatus;
+                $(expvarsSelect).find('option').each(function() {
+                    $(this).prop('selected', selectAllExpvarsStatus);
+                });
+                $(expvarsSelect).select2('destroy');
+                $(expvarsSelect).select2();
+                $(expvarsSelect).trigger("change");
+            });
+            
+        });
+    </script>
+{% endblock javascripts %}
+
+{% block container %}
+    {{ super() }}
+    <h2>Step {{ step }}: Define dependent and explanatory variables</h2>
+    <form action="Backend.settings" id="form" data-bind="true" >
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="depvar_select">Dependent variable</label>
+                    <div class="input-group">
+                        <select id="depvar_select" class="form-control select mbl bg-red text-white squared" data-toggle="select" required>    
+                            {% for variable in variables %}
+                                <option value="{{ variable }}">{{ variable }}</option>    
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" id="depvar" name="depvar" data-toggle="select4"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="expvars_select">Explanatory variables</label>
+                    <select id="expvars_select" multiple="multiple" class="form-control multiselect mbl bg-red squared" data-toggle="select" required>
+                        {% for variable in variables %}
+                            <option value="{{ variable }}">{{ variable }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" id="expvars" name="expvars" data-toggle="select4" />
+                    <a href="#" id="select_all_expvars" class="btn btn-lg pull-right bg-red text-white">Select all</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="intercept">Include intercept</label>
+                    <div class="bootstrap-switch-square">
+                        <select id="intercept" name="intercept" class="form-control select mbl bg-red text-white squared" data-toggle="select" required>
+                            <option value="on">Yes</option>
+                            <option value="off">No</option> 
+                        </select>
+                        <input type="hidden" data-toggle="select4" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="nav">
+            <a href="Backend.select_csv" id="link" data-bind="true" class="btn btn-lg pull-left bg-blue text-white">Back</a>
+            <button type="submit" class="btn btn-lg pull-right bg-green text-white">Next</button>
+        </div>
+    </form>
+{% endblock %}
