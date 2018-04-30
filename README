@@ -2,6 +2,6 @@
 
 # NOTE: This version only works on GNU/Linux operating systems. Windows version is already unstable, we are working into.
 
-# TODO
-# Cancel process
-# About
+## Requirements
+# PySide 1.2.2
+# htmlPy
