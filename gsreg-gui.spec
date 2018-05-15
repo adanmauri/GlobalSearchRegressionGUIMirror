@@ -3,14 +3,13 @@
 block_cipher = None
 
 added_files = [
-    ( 'htmlPy/binder.js', 'htmlPy' ),
-    ( 'templates/*', 'templates' ),
-    ( 'static', 'static' ),
-    ( 'scripts', 'scripts' )
+    ( 'assets', 'assets' ),
+    ( 'src', 'src' ),
+    ( 'templates', 'templates')
 ]
 
-a = Analysis(['gsreg-gui.py'],
-             pathex=['/home/adanmauri/Documentos/julia/GSRegGUI'],
+a = Analysis(['main.py'],
+             pathex=['/home/adanmauri/Documentos/GUI_QT'],
              binaries=[],
              datas=added_files,
              hiddenimports=[],
