@@ -36,7 +36,7 @@ class Settings(AbstractPage):
         self.outsample_validator.setBottom(0)
         self.outsample_validator.setTop(self.getAvailableOutsample())
         self.outsample_label = QtWidgets.QLabel()
-        self.outsample_label.setText("Include intecept")
+        self.outsample_label.setText("Out-of-sample size")
         self.outsample_input = QtWidgets.QLineEdit()
         self.outsample_input.setObjectName("outsample_input")
         self.outsample_input.setStyleSheet(
