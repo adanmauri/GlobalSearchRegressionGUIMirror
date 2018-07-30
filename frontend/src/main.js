@@ -7,6 +7,7 @@ import store from './store'
 import constants from './constants'
 import utils from './utils'
 
+import VueNativeSock from 'vue-native-websocket'
 import VueResource from 'vue-resource'
 
 import BootstrapVue from 'bootstrap-vue'
@@ -19,6 +20,7 @@ import 'vue-material/dist/theme/default.css'
 
 Vue.config.productionTip = false
 Vue.prototype.$constants = constants
+Vue.use(VueNativeSock, constants.WS.url, { format: 'json' })
 
 library.add(faDatabase, faFlask, faCog, faSpinner, faClipboardList, faFile, faUpload, faChevronLeft, faChevronRight)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
