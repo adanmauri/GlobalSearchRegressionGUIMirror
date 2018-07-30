@@ -5,18 +5,19 @@ import utils from '../utils'
 Vue.use(Vuex)
 const state = {
   navHidden: false,
-  currentStep: 0,
+  currentStep: null,
   userToken: utils.userToken(),
   completeSteps: utils.createStepStatus(),
   setSteps: utils.createStepStatus(),
   paraprocs: 1,
   exportcsv: false,
   inputData: {
-    datanames: ['y', 'x1', 'x2', 'x3', 'x4'],
-    nobs: 35
+    datanames: [],
+    nobs: null
   },
   server: {
-    nworkers: 4
+    nworkers: null,
+    operationId: null
   },
   gsregOptions: {
     depvar: null,
@@ -44,6 +45,9 @@ const getters = {
   },
   getServerNworkers (state) {
     return state.server.nworkers
+  },
+  getServerOperationId (state) {
+    return state.server.operationId
   },
   getGSRegOptionsDepvar (state) {
     return state.gsregOptions.depvar
@@ -113,7 +117,35 @@ const actions = {
   }
 }
 const mutations = {
-  setnputDataDatanames (state, datanames) {
+  restartOperation (state, payload) {
+    // TODO: Delegate to utils
+    var i
+    for (i = 0; i < state.completeSteps.length; i++) {
+      state.completeSteps[i] = false
+    }
+    for (i = 0; i < state.setSteps.length; i++) {
+      state.setSteps[i] = false
+    }
+    state.inputData.datanames = []
+    state.inputData.nobs = null
+    state.server.nworkers = null
+    state.server.operationId = null
+    state.gsregOptions.depvar = null
+    state.gsregOptions.expvars = []
+    state.gsregOptions.intercept = false
+    state.gsregOptions.time = null
+    state.gsregOptions.residualtest = null
+    state.gsregOptions.keepwnoise = null
+    state.gsregOptions.ttest = null
+    state.gsregOptions.orderresults = null
+    state.gsregOptions.modelavg = null
+    state.gsregOptions.outsample = 0
+    state.gsregOptions.csv = null
+    state.gsregOptions.method = 'fast'
+    state.gsregOptions.addprocs = 0
+    state.gsregOptions.criteria = []
+  },
+  setInputDataDatanames (state, datanames) {
     state.inputData.datanames = datanames
   },
   setInputDataNobs (state, nobs) {
@@ -121,6 +153,9 @@ const mutations = {
   },
   setServerNworkers (state, nworkers) {
     state.server.nworkers = nworkers
+  },
+  setServerOperationId (state, operationId) {
+    state.server.operationId = operationId
   },
   setGSRegOptionsDepvar (state, depvar) {
     state.gsregOptions.depvar = depvar
@@ -166,6 +201,9 @@ const mutations = {
   },
   setNavHidden (state, navHidden) {
     state.navHidden = navHidden
+  },
+  setNavBlocked (state, navBlocked) {
+    state.navBlocked = navBlocked
   },
   setCurrentStep (state, step) {
     state.currentStep = step

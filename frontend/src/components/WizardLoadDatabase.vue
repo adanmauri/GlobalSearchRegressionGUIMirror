@@ -13,10 +13,12 @@
           v-model="files"
           :custom-action="customAction"
           @input-filter="inputFilter"
+          @input-file="inputFile"
           accept="text/csv"
           :extensions="['csv']"
           :drop="true">
-        <span class="btn btn-secondary" v-if="!files.length">
+          
+        <span class="btn select-file" v-if="!files.length">
           Select CSV file
         </span>
       </file-upload>
@@ -32,19 +34,16 @@
       <div class="file-upload-progress-speed">{{ file.speed | speed }}</div>
     </div>
 
-    <div class="upload-button-container" v-if="files.length">
-      <md-button class="md-icon-button md-raised upload-button" v-show="!$refs.upload || !$refs.upload.active"
-                 @click.prevent="$refs.upload.active = true">
-        <font-awesome-icon icon="upload"/>
-      </md-button>
-      <span class="upload-button-label">Start upload</span>
+    <div class="upload-button-container text-right" v-if="files.length">
+      <md-button class="md-raised md-primary upload-file" v-show="!$refs.upload || !$refs.upload.active"
+                 @click.prevent="$refs.upload.active = true">Start upload</md-button>
     </div>
   </div>
 </template>
 
 <script>
   import FileUpload from 'vue-upload-component'
-  import {mapState} from 'vuex'
+  import {mapState, mapActions} from 'vuex'
 
   export default {
     components: {FileUpload},
@@ -66,11 +65,14 @@
       ...mapState(['userToken'])
     },
     methods: {
+      ...mapActions(['nextStep']),
+      validate () {
+        this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: true })
+      },
       customAction (file, component) {
         var xhr = new XMLHttpRequest()
         xhr.open('POST', this.$constants.API.host + this.$constants.API.paths.load_database, true)
         xhr.setRequestHeader('X-User-Token', this.$store.state.userToken)
-        // delegate to library the behaviour of progress management.
         return component.uploadXhr(xhr, file, file.file)
       },
       inputFilter (newFile, oldFile, prevent) {
@@ -79,12 +81,45 @@
             return prevent()
           }
         }
+      },
+      inputFile (newFile, oldFile) {
+        if (newFile && oldFile) {
+          if (newFile.success !== oldFile.success) {
+            // TODO: Validate response values
+            this.$store.commit('setInputDataNobs', newFile.response.nobs)
+            this.$store.commit('setInputDataDatanames', newFile.response.datanames)
+            this.$store.commit('setServerNworkers', newFile.response.nworkers)
+            this.$store.commit('setServerOperationId', newFile.response.filename)
+            this.validate()
+            // TODO: Remove to other place
+            this.$store.commit('setNavBlocked', false)
+            this.$store.commit('setNavHidden', false)
+            this.nextStep()
+          }
+        }
       }
     }
   }
 </script>
 
 <style>
+  .btn.select-file,
+  button.upload-file {
+    background: #6682e0!important;
+  }
+
+  .btn.select-file {
+    color: #fff;
+    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+    min-width: 88px;
+    height: 36px;
+    margin: 6px 8px;
+    user-select: none;
+    border-radius: 2px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
 
   .file-upload > div {
     display: flex;
@@ -117,46 +152,6 @@
     text-align: right;
     font-size: 15px;
     color: #999;
-  }
-
-  .upload-button-container {
-    text-align: right;
-    position: relative;
-    top: -113px;
-    height: 56px;
-  }
-
-  .upload-button:hover + .upload-button-label {
-    opacity: 1;
-  }
-
-  .upload-button-label {
-    background: rgba(50, 50, 50, 0.8);
-    color: #FFF;
-    padding: 3px 6px;
-    border-radius: 2px;
-    font-size: 13px;
-    font-weight: bold;
-    position: relative;
-    top: 15px;
-    opacity: 0;
-    transition: 0.3s all;
-    user-select: none;
-  }
-
-  .upload-button {
-    background: #60ad51;
-    color: #FFF;
-    width: 56px;
-    height: 56px;
-    text-align: center;
-    font-size: 24px;
-    outline: none;
-    float: right;
-  }
-
-  .upload-button .md-ripple {
-    margin-top: -7px;
   }
 
   h1 {

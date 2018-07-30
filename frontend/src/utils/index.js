@@ -6,12 +6,40 @@ export default {
     return localStorage.getItem('user-token') || localStorage.setItem('user-token', uuidv4())
   },
   createStepStatus () {
-    var steps = new Array(constants.STEPS.length).fill(false)
-    steps[0] = true
-    return steps
+    return new Array(constants.STEPS.length).fill(false)
   },
   outsampleMax (nobs, insampleMinSize, expvars, intercept) {
     var max = nobs - insampleMinSize - expvars.length - ((intercept) ? 1 : 0)
     return (max >= 0) ? max : 0
+  },
+  createInputDataState () {
+    return {
+      nworkers: null,
+      operationId: null
+    }
+  },
+  createServerState () {
+    return {
+      datanames: [],
+      nobs: null
+    }
+  },
+  createGSRegOptionsState () {
+    return {
+      depvar: null,
+      expvars: [],
+      intercept: false,
+      time: null,
+      residualtest: null,
+      keepwnoise: null,
+      ttest: null,
+      orderresults: null,
+      modelavg: null,
+      outsample: 0,
+      csv: null,
+      method: 'fast',
+      addprocs: 0,
+      criteria: []
+    }
   }
 }

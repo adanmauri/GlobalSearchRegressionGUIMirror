@@ -60,6 +60,9 @@ export default {
     WizardProcessing,
     WizardResults
   },
+  created () {
+    this.setStep(0)
+  },
   data () {
     return {}
   },
@@ -83,12 +86,28 @@ export default {
       }
     },
     setStep (step) {
-      if (this.$store.state.setSteps[step] || (step - 1 >= 0 && this.$store.state.completeSteps[step - 1])) {
+      if (this.$store.state.setSteps[step] || (step - 1 >= 0 && this.$store.state.completeSteps[step - 1]) || step === 0) {
         if (!this.$store.state.navHidden) {
           this.$store.commit('setCurrentStep', step)
           // TODO: Unhardcode step
-          if (step === 3) {
-            this.$store.commit('setNavHidden', true)
+          switch (step) {
+            case 0:
+              this.$store.commit('restartOperation', true)
+              this.$store.commit('setNavBlocked', true)
+              this.$store.commit('setNavHidden', true)
+              break
+            case 1:
+              this.$store.commit('setNavBlocked', false)
+              this.$store.commit('setNavHidden', false)
+              break
+            case 2:
+              this.$store.commit('setNavBlocked', false)
+              this.$store.commit('setNavHidden', false)
+              break
+            case 3:
+              this.$store.commit('setNavBlocked', true)
+              this.$store.commit('setNavHidden', true)
+              break
           }
         }
       }

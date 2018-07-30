@@ -1,12 +1,12 @@
 export default {
   'API': {
-    'host': '//localhost:8000',
+    'host': '//192.168.0.22:8000',
     'paths': {
       'load_database': '/upload'
     }
   },
   'WS': {
-    'url': 'ws://localhost:8000'
+    'url': 'ws://192.168.0.22:8000'
   },
   'INSAMPLE_MIN_SIZE': 20,
   'STEPS': [
