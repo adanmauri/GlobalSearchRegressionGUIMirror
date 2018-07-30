@@ -105,8 +105,8 @@ export default {
               this.$store.commit('setNavHidden', false)
               break
             case 3:
-              this.$store.commit('setNavBlocked', true)
-              this.$store.commit('setNavHidden', true)
+              this.$store.commit('setNavBlocked', false)
+              this.$store.commit('setNavHidden', false)
               break
           }
         }

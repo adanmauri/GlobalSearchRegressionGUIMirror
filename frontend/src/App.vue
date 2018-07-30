@@ -117,14 +117,6 @@ h1 {
   #main {
     padding-top: 10px;
   }
-
-  #gsreg-logotype {
-    width: 200px;
-  }
-
-  #julia-logotype {
-    width: 83px;
-  }
 }
 
 
