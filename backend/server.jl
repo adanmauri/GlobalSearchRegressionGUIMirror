@@ -9,13 +9,36 @@ struct GSRegJob
     file # tempfile of data
     hash # hash id of user
     options # options for calculation
+    id # unique identifier for this job
     time_enqueued # time enqueued
-    GSRegJob(file, hash, options) = new(file, hash, options, time())
+    GSRegJob(file, hash, options) = new(file, hash, options, Base.Random.uuid4(), time())
 end
 
-#JSON.print(io::IO, job::GSRegJob) = something
-
 job_queue = Queue(GSRegJob)
+job_queue_cond = Condition()
+
+"""
+    Consume job_queue after notification
+"""
+@async begin
+    while(true)
+        wait(job_queue_cond)
+        while(!isempty(job_queue))
+            gsreg(dequeue!(job_queue))
+        end
+    end
+end
+
+"""
+    Enqueue the job and notify worker
+"""
+function enqueue_job(job::GSRegJob)
+    global job_queue, job_queue_cond
+    enqueue!(job_queue, job)
+    notify(job_queue_cond)
+end
+
+
 
 function sendMessage(id::String, data)
     global connections
@@ -31,13 +54,14 @@ end
 
 function gsreg(job::GSRegJob)
     try
-        sendMessage(job.hash, Dict("message" => "Reading data"))
+        sendMessage(job.hash, Dict("operation_id" => job.id, "message" => "Reading data"))
         data = CSV.read(job.options.file)
-        sendMessage(job.hash, Dict("message" => "Executing GSReg"))
-        res = gsreg(job.options["formula"], data, job.options..., onmessage = message -> sendMessage(job.hash, Dict("message" => message)))
-        sendMessage(job.hash, Dict("done" => true))
+        sendMessage(job.hash, Dict("operation_id" => job.id, "message" => "Executing GSReg"))
+        res = gsreg(job.options["formula"], data)
+        #res = gsreg(job.options["formula"], data, job.options..., onmessage = message -> sendMessage(job.hash, Dict("message" => message)))
+        sendMessage(job.hash, Dict("operation_id" => job.id, "done" => true, "res" => res))
     catch
-        # clean structure and other things
+        sendMessage(job.hash, Dict("operation_id" => job.id, "message" => "Execution failed"))
     end
 end
 
@@ -84,7 +108,9 @@ end
 """
 function toJsonWithCors(res, req)
     headers  = HttpCommon.headers()
-    headers["Content-Type"] = "application/json; charset=utf-8"
+    if( req[:method] != "OPTIONS" )
+        headers["Content-Type"] = "application/json; charset=utf-8"
+    end
     headers["Access-Control-Allow-Headers"] = "X-User-Token, Content-Type"
     if get(req[:headers], "Origin", "") == "http://localhost:8080"
         headers["Access-Control-Allow-Origin"] = "http://localhost:8080"
@@ -110,8 +136,12 @@ function authHeader(app, req)
     end
 end
 
+"""
+    TODO:
+"""
 function validateInput(options)
-
+    options["formula"] = "y x*"
+    options
 end
 
 """
@@ -150,10 +180,10 @@ function upload(req)
     # For local executions the limit would be 25 covariates.
 
     Dict(
-        "workers" => nworkers(),
-        "vars" => names(data),
+        "nworkers" => nworkers(),
+        "datanames" => names(data),
         "nobs" => size(data,1),
-        "file" => tempfile
+        "filename" => tempfile
     )
 end
 
@@ -189,10 +219,11 @@ function solve(req)
     """
     Execute regression in background, report results trough ws
     """
-    global job_queue
-    enqueue!(job_queue, GSRegJob("", "", Dict()))
+    job = GSRegJob(tempfile, req[:token], opt)
+    enqueue_job(job)
     Dict(
         "ok" => true,
+        "operation_id" => job.id,
         "in_queue" => length(job_queue)
     )
 end
