@@ -4,35 +4,52 @@
       <div class="row">
         <div class="col">
           <div class="progress step-progress">
-            <div class="progress-bar step-progress-bar" role="progressbar" :style="{ width: getProgress+'%' }" :aria-valuenow="getProgress" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar step-progress-bar" role="progressbar"
+                 :style="{ width: getProgress+'%' }" :aria-valuenow="getProgress" aria-valuemin="0"
+                 aria-valuemax="100"></div>
           </div>
         </div>
       </div>
       <div class="row step-buttons">
         <div v-for="(step, index) in this.$constants.STEPS" :key="index" class="col step-button-container">
-          <md-button class="step-button md-icon-button md-raised" :class="stepClass(index)" @click.native="setStep(index)" @click.prevent="!completeSteps[index-1]">
-            <font-awesome-icon :icon="step.icon" />
+          <md-button class="step-button md-icon-button md-raised" :class="stepClass(index)"
+                     @click.native="setStep(index)" @click.prevent="!completeSteps[index-1]">
+            <font-awesome-icon :icon="step.icon"/>
           </md-button>
           <div class="step-label" :class="stepClass(index)">{{ step.label }}</div>
         </div>
       </div>
     </nav>
     <div class="tab container">
-      <component :is="$constants.STEPS[currentStep].component" ></component>
+      <component :is="$constants.STEPS[currentStep].component"></component>
     </div>
     <div class="container nav-buttons">
       <div class="row">
         <div v-if="currentStep-1 >= 0" class="col nav-col nav-prev-col">
+<<<<<<< HEAD
           <md-button class="md-icon-button md-raised nav-button nav-prev-button" @click.native="setStep(currentStep-1)" :hidden="navHidden" >
             <font-awesome-icon icon="chevron-left" />
+=======
+          <md-button class="md-icon-button md-raised nav-button nav-prev-button"
+                     @click.native="setStep(currentStep-1)" :hidden="navBlocked">
+            <font-awesome-icon icon="chevron-left"/>
+>>>>>>> ed7742c0086b9bf9041b5b6690a3004693574f05
           </md-button>
-          <span v-if="currentStep-1 >= 0" class="nav-label nav-prev-label">{{ $constants.STEPS[currentStep-1].label }}</span>
+          <span v-if="currentStep-1 >= 0"
+                class="nav-label nav-prev-label">{{ $constants.STEPS[currentStep-1].label }}</span>
         </div>
         <div v-if="currentStep+1 < $constants.STEPS.length" class="col nav-col nav-next-col">
+<<<<<<< HEAD
           <md-button class="md-icon-button md-raised nav-button nav-next-button" :class="availableClass" :disabled="!completeSteps[currentStep]" :hidden="navHidden" @click.native="setStep(currentStep+1)" >
             <font-awesome-icon icon="chevron-right" />
+=======
+          <md-button class="md-icon-button md-raised nav-button nav-next-button" :class="availableClass"
+                     :disabled="!completeSteps[currentStep]" :hidden="navBlocked"
+                     @click.native="setStep(currentStep+1)">
+            <font-awesome-icon icon="chevron-right"/>
+>>>>>>> ed7742c0086b9bf9041b5b6690a3004693574f05
           </md-button>
-          <span v-if="currentStep+1 < $constants.STEPS.length" class="nav-label nav-next-label"  >{{ $constants.STEPS[currentStep+1].label }}</span>
+          <span v-if="currentStep+1 < $constants.STEPS.length" class="nav-label nav-next-label">{{ $constants.STEPS[currentStep+1].label }}</span>
         </div>
       </div>
     </div>
@@ -90,169 +107,140 @@ export default {
       }
     }
   }
-}
 </script>
 
 <style lang="scss">
-.wizard .step-progress {
-  margin-top: 50px;
-  height: 7px;
-}
-
-.wizard .step-progress-bar {
-  background-color: #389826;
-}
-
-.wizard .step-buttons {
-  transform: translateY(-39%);
-}
-
-.wizard .step-button-container {
-  text-align: center;
-}
-
-.wizard .step-button-container .step-button {
-  height: 50px;
-  width: 50px;
-  display: inline-block;
-  background: #e9ecef;
-  color: #666666;
-  font-size: 22px;
-  margin: 0;
-}
-
-.wizard .step-button-container .step-button:focus {
-  outline: 0;
-}
-
-.wizard .step-button-container .step-button:hover {
-  cursor: pointer;
-  color: #222222;
-}
-
-.wizard .step-button-container .step-button.active,
-.wizard .step-button-container .step-button.set {
-  border: 3px solid #389826; 
-  color: #389826;
-  background: #e9ecef;
-}
-
-.wizard .step-button-container .step-button.complete,
-.wizard .step-button-container .step-button.complete.set
-.wizard .step-button-container .step-button.complete.set.active {
-  background: #389826; 
-  color: #ffffff;
-}
-
-.wizard .step-button-container .step-button.disabled {
-  cursor: not-allowed;
-}
-
-.wizard .step-button-container .step-label {
-  font-size: 15px;
-  color: #666;
-  margin-top: 5px;
-  transition: 1s opacity;
-  opacity: 0.3;
-}
-
-.wizard .step-button-container .step-label.active,
-.wizard .step-button-container .step-label.active.completed {
-  opacity: 1;
-}
-
-.wizard .step-button-container .step-label.complete {
-  opacity: 0.6;
-}
-
-.wizard h2 {
-  font-size: 20px;
-}
-
-.wizard h3 {
-  font-size: 16px;
-}
-
-hr {
-  margin-top: 0;
-}
-
-.nav-next-col {
-  text-align: right;
-}
-
-.nav-buttons {
-  margin-top: 20px;
-}
-
-.nav-button.available {
-  background: #60ad51!important;
-  color: #FFFFFF!important;
-}
-
-.nav-button:focus {
-  outline: none;
-}
-
-.nav-label {
-  background: rgba(50,50,50,0.8);
-  color: #FFF;
-  padding: 3px 6px;
-  border-radius: 2px;
-  font-size: 13px;
-  font-weight: bold;
-  position: relative;
-  top: 15px;
-  opacity: 0;
-  transition: 0.3s all;
-  user-select: none;
-
-  margin-top: -7px;
-}
-
-.nav-prev-label,
-.nav-prev-button {
-  float: left;
-}
-
-.nav-next-label,
-.nav-next-button {
-  float: right;
-}
-
-.nav-prev-button:hover + .nav-prev-label {
-  opacity: 100;
-}
-
-.nav-next-button:hover + .nav-next-label {
-  opacity: 100;
-}
-
-
-/*
-@include media-breakpoint-down(sm) {
-  header .progress {
-    margin-top: 30px;
-    height: 4px;
+  .wizard .step-progress {
+    margin-top: 50px;
+    height: 7px;
   }
 
-  header .step-button-container .step-button {
-    height: 30px;
-    width: 30px;
-    min-width: 30px;
+  .wizard .step-progress-bar {
+    background-color: #389826;
+  }
+
+  .wizard .step-buttons {
+    transform: translateY(-39%);
+  }
+
+  .wizard .step-button-container {
+    text-align: center;
+  }
+
+  .wizard .step-button-container .step-button {
+    height: 50px;
+    width: 50px;
+    display: inline-block;
+    background: #e9ecef;
+    color: #666666;
+    font-size: 22px;
+    margin: 0;
+  }
+
+  .wizard .step-button-container .step-button:focus {
+    outline: 0;
+  }
+
+  .wizard .step-button-container .step-button:hover {
+    cursor: pointer;
+    color: #222222;
+  }
+
+  .wizard .step-button-container .step-button.active,
+  .wizard .step-button-container .step-button.set {
+    border: 3px solid #389826;
+    color: #389826;
+    background: #e9ecef;
+  }
+
+  .wizard .step-button-container .step-button.complete,
+  .wizard .step-button-container .step-button.complete.set
+  .wizard .step-button-container .step-button.complete.set.active {
+    background: #389826;
+    color: #ffffff;
+  }
+
+  .wizard .step-button-container .step-button.disabled {
+    cursor: not-allowed;
+  }
+
+  .wizard .step-button-container .step-label {
     font-size: 15px;
+    color: #666;
+    margin-top: 5px;
+    transition: 1s opacity;
+    opacity: 0.3;
   }
 
-  header .step-button-container .step-button.done {
-    padding: 2px;
-    border-width: 2px; 
+  .wizard .step-button-container .step-label.active,
+  .wizard .step-button-container .step-label.active.completed {
+    opacity: 1;
   }
-}
-*/
-/*
-@include media-breakpoint-down(xs) {
-  header .step-button-container {
-    padding: 0;
+
+  .wizard .step-button-container .step-label.complete {
+    opacity: 0.6;
   }
-}*/
+
+  .wizard h2 {
+    font-size: 20px;
+  }
+
+  .wizard h3 {
+    font-size: 16px;
+  }
+
+  hr {
+    margin-top: 0;
+  }
+
+  .nav-next-col {
+    text-align: right;
+  }
+
+  .nav-buttons {
+    margin-top: 20px;
+  }
+
+  .nav-button.available {
+    background: #60ad51 !important;
+    color: #FFFFFF !important;
+  }
+
+  .nav-button:focus {
+    outline: none;
+  }
+
+  .nav-label {
+    background: rgba(50, 50, 50, 0.8);
+    color: #FFF;
+    padding: 3px 6px;
+    border-radius: 2px;
+    font-size: 13px;
+    font-weight: bold;
+    position: relative;
+    top: 15px;
+    opacity: 0;
+    transition: 0.3s all;
+    user-select: none;
+
+    margin-top: -7px;
+  }
+
+  .nav-prev-label,
+  .nav-prev-button {
+    float: left;
+  }
+
+  .nav-next-label,
+  .nav-next-button {
+    float: right;
+  }
+
+  .nav-prev-button:hover + .nav-prev-label {
+    opacity: 100;
+  }
+
+  .nav-next-button:hover + .nav-next-label {
+    opacity: 100;
+  }
 </style>
