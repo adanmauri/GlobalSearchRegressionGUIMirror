@@ -17,7 +17,6 @@ end
 job_queue = Queue(GSRegJob)
 job_queue_cond = Condition()
 
-
 """
     Consume job_queue after notification
 """
