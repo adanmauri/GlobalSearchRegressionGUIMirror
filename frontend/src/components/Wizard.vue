@@ -26,28 +26,15 @@
     <div class="container nav-buttons">
       <div class="row">
         <div v-if="currentStep-1 >= 0" class="col nav-col nav-prev-col">
-<<<<<<< HEAD
           <md-button class="md-icon-button md-raised nav-button nav-prev-button" @click.native="setStep(currentStep-1)" :hidden="navHidden" >
             <font-awesome-icon icon="chevron-left" />
-=======
-          <md-button class="md-icon-button md-raised nav-button nav-prev-button"
-                     @click.native="setStep(currentStep-1)" :hidden="navBlocked">
-            <font-awesome-icon icon="chevron-left"/>
->>>>>>> ed7742c0086b9bf9041b5b6690a3004693574f05
           </md-button>
           <span v-if="currentStep-1 >= 0"
                 class="nav-label nav-prev-label">{{ $constants.STEPS[currentStep-1].label }}</span>
         </div>
         <div v-if="currentStep+1 < $constants.STEPS.length" class="col nav-col nav-next-col">
-<<<<<<< HEAD
           <md-button class="md-icon-button md-raised nav-button nav-next-button" :class="availableClass" :disabled="!completeSteps[currentStep]" :hidden="navHidden" @click.native="setStep(currentStep+1)" >
             <font-awesome-icon icon="chevron-right" />
-=======
-          <md-button class="md-icon-button md-raised nav-button nav-next-button" :class="availableClass"
-                     :disabled="!completeSteps[currentStep]" :hidden="navBlocked"
-                     @click.native="setStep(currentStep+1)">
-            <font-awesome-icon icon="chevron-right"/>
->>>>>>> ed7742c0086b9bf9041b5b6690a3004693574f05
           </md-button>
           <span v-if="currentStep+1 < $constants.STEPS.length" class="nav-label nav-next-label">{{ $constants.STEPS[currentStep+1].label }}</span>
         </div>
@@ -107,6 +94,7 @@ export default {
       }
     }
   }
+}
 </script>
 
 <style lang="scss">
