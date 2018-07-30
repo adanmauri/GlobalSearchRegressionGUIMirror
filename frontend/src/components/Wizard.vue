@@ -23,13 +23,13 @@
     <div class="container nav-buttons">
       <div class="row">
         <div v-if="currentStep-1 >= 0" class="col nav-col nav-prev-col">
-          <md-button class="md-icon-button md-raised nav-button nav-prev-button" @click.native="setStep(currentStep-1)" :hidden="navBlocked" >
+          <md-button class="md-icon-button md-raised nav-button nav-prev-button" @click.native="setStep(currentStep-1)" :hidden="navHidden" >
             <font-awesome-icon icon="chevron-left" />
           </md-button>
           <span v-if="currentStep-1 >= 0" class="nav-label nav-prev-label">{{ $constants.STEPS[currentStep-1].label }}</span>
         </div>
         <div v-if="currentStep+1 < $constants.STEPS.length" class="col nav-col nav-next-col">
-          <md-button class="md-icon-button md-raised nav-button nav-next-button" :class="availableClass" :disabled="!completeSteps[currentStep]" :hidden="navBlocked" @click.native="setStep(currentStep+1)" >
+          <md-button class="md-icon-button md-raised nav-button nav-next-button" :class="availableClass" :disabled="!completeSteps[currentStep]" :hidden="navHidden" @click.native="setStep(currentStep+1)" >
             <font-awesome-icon icon="chevron-right" />
           </md-button>
           <span v-if="currentStep+1 < $constants.STEPS.length" class="nav-label nav-next-label"  >{{ $constants.STEPS[currentStep+1].label }}</span>
@@ -60,7 +60,7 @@ export default {
     return {}
   },
   computed: {
-    ...mapState(['currentStep', 'completeSteps']),
+    ...mapState(['currentStep', 'completeSteps', 'navHidden']),
     getProgress () {
       return this.$store.state.currentStep * 100 / 5
     },
@@ -74,17 +74,17 @@ export default {
       return {
         active: this.$store.state.currentStep === step,
         complete: this.$store.state.completeSteps[step],
-        disabled: (this.$store.state.navBlocked) ? true : ((step > 0) ? !this.$store.state.completeSteps[step - 1] : false),
+        disabled: (this.$store.state.navHidden) ? true : ((step > 0) ? !this.$store.state.completeSteps[step - 1] : false),
         set: this.$store.state.setSteps[step]
       }
     },
     setStep (step) {
       if (this.$store.state.setSteps[step] || (step - 1 >= 0 && this.$store.state.completeSteps[step - 1])) {
-        if (!this.$store.state.navBlocked) {
+        if (!this.$store.state.navHidden) {
           this.$store.commit('setCurrentStep', step)
           // TODO: Unhardcode step
           if (step === 3) {
-            this.$store.commit('setNavBlocked', true)
+            this.$store.commit('setNavHidden', true)
           }
         }
       }

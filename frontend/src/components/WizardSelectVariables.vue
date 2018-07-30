@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import {mapState, mapGetters} from 'vuex'
 import utils from '../utils'
 
 export default {
@@ -65,12 +65,12 @@ export default {
   },
   methods: {
     validate () {
-      this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: this.$store.state.depvar !== null && this.$store.state.expvars.length > 1 })
+      this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: this.getGSRegOptionsDepvar !== null && this.getGSRegOptionsExpvars.length > 1 })
     },
     updateOutsample () {
-      var outsampleMax = utils.outsampleMax(this.$store.state.nobs, this.$constants.INSAMPLE_MIN_SIZE, this.$store.state.expvars, this.$store.state.intercept)
-      if (outsampleMax < this.$store.state.outsample) {
-        this.$store.commit('setOutsample', outsampleMax)
+      var outsampleMax = utils.outsampleMax(this.getInputDataNobs, this.$constants.INSAMPLE_MIN_SIZE, this.getGSRegOptionsExpvars, this.getGSRegOptionsIntercept)
+      if (outsampleMax < this.getGSRegOptionsOutsample) {
+        this.$store.commit('setGSRegOptionsOutsample', outsampleMax)
       }
     },
     updateSetStep () {
@@ -79,39 +79,45 @@ export default {
   },
   computed: {
     ...mapState(['datanames']),
+    ...mapGetters(['getInputDataDatanames', 'getInputDataNobs', 'getGSRegOptionsDepvar', 'getGSRegOptionsExpvars', 'getGSRegOptionsIntercept', 'getGSRegOptionsTime']),
+    datanames: {
+      get () {
+        return this.getInputDataDatanames
+      }
+    },
     dependent: {
       get () {
-        return this.$store.state.depvar
+        return this.getGSRegOptionsDepvar
       },
       set (value) {
-        this.$store.commit('setDepvar', value)
+        this.$store.commit('setGSRegOptionsDepvar', value)
         this.updateSetStep()
       }
     },
     explanatory: {
       get () {
-        return this.$store.state.expvars
+        return this.getGSRegOptionsExpvars
       },
       set (value) {
-        this.$store.commit('setExpvars', value)
+        this.$store.commit('setGSRegOptionsExpvars', value)
         this.updateSetStep()
       }
     },
     intercept: {
       get () {
-        return this.$store.state.intercept
+        return this.getGSRegOptionsIntercept
       },
       set (value) {
-        this.$store.commit('setIntercept', value)
+        this.$store.commit('setGSRegOptionsIntercept', value)
         this.updateSetStep()
       }
     },
     time: {
       get () {
-        return this.$store.state.time
+        return this.getGSRegOptionsTime
       },
       set (value) {
-        this.$store.commit('setTime', value)
+        this.$store.commit('setGSRegOptionsTime', value)
         this.updateSetStep()
       }
     }

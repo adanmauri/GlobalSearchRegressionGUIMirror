@@ -105,7 +105,7 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import {mapState, mapGetters} from 'vuex'
 import utils from '../utils'
 
 export default {
@@ -121,7 +121,7 @@ export default {
   },
   methods: {
     validate () {
-      this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: this.$store.state.criteria.length > 0 })
+      this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: this.getGSRegOptionsCriteria.length > 0 })
     },
     updateSetStep () {
       this.$store.commit('updateSetStep', { step: this.$store.state.currentStep, set: true })
@@ -129,83 +129,102 @@ export default {
   },
   computed: {
     ...mapState(['datanames']),
+    ...mapGetters(['getInputDataNobs', 'getServerNworkers', 'getGSRegOptionsExpvars', 'getGSRegOptionsIntercept', 'getGSRegOptionsResidualtest', 'getGSRegOptionsResidualtest', 'getGSRegOptionsKeepwnoise', 'getGSRegOptionsTtest', 'getGSRegOptionsOrderresults', 'getGSRegOptionsModelavg', 'getGSRegOptionsOutsample', 'getGSRegOptionsCsv', 'getGSRegOptionsMethod', 'getGSRegOptionsCriteria']),
     outsampleMax () {
-      return utils.outsampleMax(this.$store.state.nobs, this.$constants.INSAMPLE_MIN_SIZE, this.$store.state.expvars, this.$store.state.intercept)
+      return utils.outsampleMax(this.getInputDataNobs, this.$constants.INSAMPLE_MIN_SIZE, this.getGSRegOptionsExpvars, this.getGSRegOptionsIntercept)
     },
-    navBlocked: {
+    navHidden: {
       get () {
-        return this.$store.state.navBlocked
+        return this.$store.state.navHidden
       }
     },
     nworkers: {
       get () {
-        return this.$store.state.nworkers
+        return this.getServerNworkers
       }
     },
     residualtest: {
       get () {
-        return this.$store.state.residualtest
+        return this.getGSRegOptionsResidualtest
       },
       set (value) {
-        this.$store.commit('setResidualtest', value)
+        this.$store.commit('setGSRegOptionsResidualtest', value)
         if (value !== true) {
-          this.$store.commit('setKeepwnoise', false)
+          this.$store.commit('setGSRegOptionsKeepwnoise', false)
         }
         this.updateSetStep()
       }
     },
     keepwnoise: {
       get () {
-        return this.$store.state.keepwnoise
+        return this.getGSRegOptionsKeepwnoise
       },
       set (value) {
-        this.$store.commit('setKeepwnoise', value)
+        this.$store.commit('setGSRegOptionsKeepwnoise', value)
         this.updateSetStep()
       }
     },
     ttest: {
       get () {
-        return this.$store.state.ttest
+        return this.getGSRegOptionsTtest
       },
       set (value) {
-        this.$store.commit('setTtest', value)
+        this.$store.commit('setGSRegOptionsTtest', value)
         this.updateSetStep()
       }
     },
     orderresults: {
       get () {
-        return this.$store.state.orderresults
+        return this.getGSRegOptionsOrderresults
       },
       set (value) {
-        this.$store.commit('setOrderresults', value)
+        this.$store.commit('setGSRegOptionsOrderresults', value)
         this.updateSetStep()
       }
     },
     modelavg: {
       get () {
-        return this.$store.state.modelavg
+        return this.getGSRegOptionsModelavg
       },
       set (value) {
-        this.$store.commit('setModelavg', value)
+        this.$store.commit('setGSRegOptionsModelavg', value)
         this.updateSetStep()
       }
     },
     outsample: {
       get () {
-        return this.$store.state.outsample
+        return this.getGSRegOptionsOutsample
       },
       set (value) {
-        this.$store.commit('setOutsample', value)
+        this.$store.commit('setGSRegOptionsOutsample', value)
         this.$store.commit('filterCriteria', value)
         this.updateSetStep()
       }
     },
     csv: {
       get () {
-        return this.$store.state.csv
+        return this.getGSRegOptionsCsv
       },
       set (value) {
-        this.$store.commit('setCsv', value)
+        this.$store.commit('setGSRegOptionsCsv', value)
+        this.updateSetStep()
+      }
+    },
+    method: {
+      get () {
+        return this.getGSRegOptionsMethod
+      },
+      set (value) {
+        this.$store.commit('setGSRegOptionsMethod', value)
+        this.updateSetStep()
+      }
+    },
+    criteria: {
+      get () {
+        return this.getGSRegOptionsCriteria
+      },
+      set (value) {
+        this.$store.commit('setGSRegOptionsCriteria', value)
         this.updateSetStep()
       }
     },
@@ -218,30 +237,12 @@ export default {
         this.updateSetStep()
       }
     },
-    method: {
-      get () {
-        return this.$store.state.method
-      },
-      set (value) {
-        this.$store.commit('setMethod', value)
-        this.updateSetStep()
-      }
-    },
     paraprocs: {
       get () {
         return this.$store.state.paraprocs
       },
       set (value) {
         this.$store.commit('setParaprocs', value)
-        this.updateSetStep()
-      }
-    },
-    criteria: {
-      get () {
-        return this.$store.state.criteria
-      },
-      set (value) {
-        this.$store.commit('setCriteria', value)
         this.updateSetStep()
       }
     }
