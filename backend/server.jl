@@ -181,10 +181,10 @@ function upload(req)
     # For local executions the limit would be 25 covariates.
 
     Dict(
-        "workers" => nworkers(),
-        "vars" => names(data),
+        "nworkers" => nworkers(),
+        "datanames" => names(data),
         "nobs" => size(data,1),
-        "file" => tempfile
+        "filename" => tempfile
     )
 end
 
