@@ -1,101 +1,148 @@
 <template>
   <div class="main">
     <h2>Results</h2>
-    <p>
-      You should select a Comma-separated values (CSV) file, where the first row is expected to contain the variable names (column headers). In this version, variables with string values will not be available for calculation.
-    </p>
-    <p>      
-      <!-- accept, extensions, TEST timeout -->
-      <file-upload
-        ref="upload"
-        
-        v-model="files"
-        post-action="http://127.0.0.1/post"
-        
-        accept="text/csv"
-        :extensions="['csv']"
-        :drop="true"
-        @input-file="inputFile"
-      >
-      Upload file
-      </file-upload>
-      <div v-for="(file, index) in files" :key="index" >
-          <progress :value="file.progress"></progress>
-      </div>
-      <button v-show="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true" type="button">Start upload</button>
-      <!--
-      <span v-show="$refs.upload && $refs.upload.uploaded">
-        All files have been uploaded
-      </span>
-      -->
+    <nav class="results-menu">
+      <ul>
+        <li><md-button :class="activeTabClass(0)" @click.native="setActiveTab(0)">Best model results</md-button></li>
+        <li><md-button :class="activeTabClass(1)" @click.native="setActiveTab(1)">Model averaging results</md-button></li>
+      </ul>
+    </nav>
+    <div class="results-tabs">
+      <div class="results-tab" v-if="activeTab === 0">
+        <md-table md-card>
+          <md-table-toolbar>
+            <h1 class="md-title">Best model results</h1>
+          </md-table-toolbar>
 
-      <p>
-        <router-link :to="{ name: 'load-database' }" class="start-button">
-          Load your database
-        </router-link>
-      </p>
+          <md-table-row>
+            <md-table-cell colspan="3"></md-table-cell>
+            <md-table-cell colspan="3" class="dependent-variable"><b>Dependent variable: </b>{{ depvar }}</md-table-cell>
+          </md-table-row>
+
+          <md-table-row class="best-results-title">
+            <md-table-cell colspan="3"><b>Selected covariates</b></md-table-cell>
+            <md-table-cell><b>Coef.</b></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest"><b>Std.</b></md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest"><b>t-test</b></md-table-cell><md-table-cell v-else></md-table-cell>
+          </md-table-row>
+
+          <md-table-row v-for="(expvar, index) in expvars" :key="index" v-if="bestResult[expvar+'_b']">
+            <md-table-cell colspan="3"><b>{{ expvar }}</b></md-table-cell>
+            <md-table-cell>{{ bestResult[expvar+'_b'] }}</md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+          </md-table-row>
+
+          <md-table-row v-if="gsregOptions.intercept">
+            <md-table-cell colspan="3"><b>_cons</b></md-table-cell>
+            <md-table-cell>{{ bestResult['_cons_b'] }}</md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+          </md-table-row>
+
+          <md-table-row class="observations">
+            <md-table-cell colspan="3"><b>Observations</b></md-table-cell>
+            <md-table-cell colspan="3">{{ bestResult['nobs'] }}</md-table-cell>
+          </md-table-row>
+
+          <md-table-row >
+            <md-table-cell colspan="3"><b>{{ $constants.CRITERIA['r2adj'] }}</b></md-table-cell>
+            <md-table-cell colspan="3">{{ bestResult['r2adj'] }}</md-table-cell>
+          </md-table-row>
+
+          <md-table-row >
+            <md-table-cell colspan="3"><b>F-statistic</b></md-table-cell>
+            <md-table-cell colspan="3">{{ bestResult['F'] }}</md-table-cell>
+          </md-table-row>
+
+          <md-table-row >
+            <md-table-cell colspan="3"><b>Combined criteria</b></md-table-cell>
+            <md-table-cell colspan="3">{{ bestResult['order'] }}</md-table-cell>
+          </md-table-row>
+
+          <md-table-row v-for="(criteria, index) in gsregOptions.criteria" :key="index" v-if="criteria!='r2adj'" >
+            <md-table-cell colspan="3"><b>{{ $constants.CRITERIA[criteria] }}</b></md-table-cell>
+            <md-table-cell colspan="3">{{ bestResult[criteria] }}</md-table-cell>
+          </md-table-row>
+        </md-table>
+      </div>
+      <div class="results-tab" v-if="activeTab === 1">
+        Model averaging results
+      </div>
+    </div>
+    <div class="text-right">
+      <md-button class="md-raised md-primary" @click.native="startOver()">Start over</md-button>
+    </div>
   </div>
 </template>
 
 <script>
-import FileUpload from 'vue-upload-component'
+import {mapState} from 'vuex'
 
 export default {
-  components: { FileUpload },
-  name: 'LoadDatabase',
+  components: { },
+  name: 'Results',
   data () {
     return {
-      files: []
+      activeTab: 0
     }
   },
+  computed: {
+    ...mapState(['depvar', 'expvars', 'gsregOptions', 'paraprocs', 'exportcsv', 'bestResult'])
+  },
   methods: {
-    inputFile: function (newFile, oldFile, prevent) {
-      /* if (newFile && !oldFile) {
-        if (!/\.(csv)$/i.test(newFile.name)) {
-          return prevent()
-        }
+    startOver () {
+      self.commit('setCurrentStep', 0)
+    },
+    activeTabClass (tab) {
+      return {
+        active: this.activeTab === tab
       }
-
-      if (newFile && oldFile) {
-        // Update file
-
-        // Start upload
-        if (newFile.active !== oldFile.active) {
-          console.log('Start upload', newFile.active, newFile)
-
-          // min size
-          if (newFile.size >= 0 && newFile.size < 100 * 1024) {
-            newFile = this.$refs.upload.update(newFile, {error: 'size'})
-          }
-        }
-
-        // Upload progress
-        if (newFile.progress !== oldFile.progress) {
-          console.log('progress', newFile.progress)
-        }
-
-        // Upload error
-        if (newFile.error !== oldFile.error) {
-          console.log('error', newFile.error)
-        }
-
-        // Uploaded successfully
-        if (newFile.success !== oldFile.success) {
-          console.log('success', newFile.success)
-        }
-      } */
-
-      newFile.blob = ''
-      let URL = window.URL || window.webkitURL
-      if (URL && URL.createObjectURL) {
-        newFile.blob = URL.createObjectURL(newFile.file)
-      }
+    },
+    setActiveTab (tab) {
+      this.activeTab = tab
     }
   }
 }
 </script>
 
 <style>
+
+  .results-menu ul {
+    margin: 0;
+    padding: 0;
+  }
+
+  .results-menu ul li {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+  }
+
+  .results-menu ul li button:hover {
+    border-bottom: 1px solid #000;
+    background-color: #fff!important;
+  }
+
+  .results-menu ul li button.active,
+  .results-menu ul li button.active:hover {
+    border-bottom: 1px solid #6682e0;
+    color: #6682e0;
+  }
+
+  button:active,
+  button:focus {
+    outline: none;
+  }
+
+  .best-results-title {
+    border-bottom: 2px solid #999;
+  }
+
+  .observations {
+    border-top: 2px solid #999;
+  }
+
 h1 {
   font-weight: normal;
   font-family: "Lato Regular";

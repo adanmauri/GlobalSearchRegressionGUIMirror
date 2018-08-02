@@ -155,6 +155,10 @@
     color: #999;
   }
 
+  button.upload-file {
+    margin: 10px 0 0 0;
+  }
+
   h1 {
     font-weight: normal;
     font-family: "Lato Regular";

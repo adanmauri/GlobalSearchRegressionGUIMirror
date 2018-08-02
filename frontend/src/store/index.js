@@ -25,10 +25,11 @@ const state = {
       length: null
     }
   },
+  depvar: null,
+  expvars: [],
+  addprocs: 0,
   gsregOptions: {
-    depvar: null,
-    expvars: [],
-    intercept: false,
+    intercept: null,
     time: null,
     residualtest: null,
     keepwnoise: null,
@@ -38,9 +39,9 @@ const state = {
     outsample: 0,
     csv: null,
     method: 'fast',
-    addprocs: 0,
     criteria: []
-  }
+  },
+  bestResult: null
 }
 const getters = {
   getInputDataDatanames (state) {
@@ -59,10 +60,10 @@ const getters = {
     return state.server.operationId
   },
   getGSRegOptionsDepvar (state) {
-    return state.gsregOptions.depvar
+    return state.depvar
   },
   getGSRegOptionsExpvars (state) {
-    return state.gsregOptions.expvars
+    return state.expvars
   },
   getGSRegOptionsIntercept (state) {
     return state.gsregOptions.intercept
@@ -95,7 +96,7 @@ const getters = {
     return state.gsregOptions.method
   },
   getGSRegOptionsAddprocs (state) {
-    return state.gsregOptions.addprocs
+    return state.addprocs
   },
   getGSRegOptionsCriteria (state) {
     return state.gsregOptions.criteria
@@ -139,8 +140,9 @@ const mutations = {
     state.inputData.nobs = null
     state.server.nworkers = null
     state.server.operationId = null
-    state.gsregOptions.depvar = null
-    state.gsregOptions.expvars = []
+    state.depvar = null
+    state.expvars = []
+    state.addprocs = 0
     state.gsregOptions.intercept = false
     state.gsregOptions.time = null
     state.gsregOptions.residualtest = null
@@ -151,7 +153,6 @@ const mutations = {
     state.gsregOptions.outsample = 0
     state.gsregOptions.csv = null
     state.gsregOptions.method = 'fast'
-    state.gsregOptions.addprocs = 0
     state.gsregOptions.criteria = []
   },
   setInputDataDatanames (state, datanames) {
@@ -179,10 +180,10 @@ const mutations = {
     state.server.operationId = operationId
   },
   setGSRegOptionsDepvar (state, depvar) {
-    state.gsregOptions.depvar = depvar
+    state.depvar = depvar
   },
   setGSRegOptionsExpvars (state, expvars) {
-    state.gsregOptions.expvars = expvars
+    state.expvars = expvars
   },
   setGSRegOptionsIntercept (state, intercept) {
     state.gsregOptions.intercept = intercept
@@ -215,7 +216,7 @@ const mutations = {
     state.gsregOptions.method = method
   },
   setGSRegOptionsAddprocs (state, addprocs) {
-    state.gsregOptions.addprocs = addprocs
+    state.addprocs = addprocs
   },
   setGSRegOptionsCriteria (state, criteria) {
     state.gsregOptions.criteria = criteria
@@ -230,7 +231,7 @@ const mutations = {
     state.currentStep = step
   },
   filterExpvars (state, depvar) {
-    state.gsregOptions.expvars = state.gsregOptions.expvars.filter(e => e !== depvar)
+    state.expvars = state.expvars.filter(e => e !== depvar)
   },
   filterTime (state, depvar) {
     state.gsregOptions.time = (state.gsregOptions.time !== depvar) ? state.gsregOptions.time : null
@@ -258,6 +259,9 @@ const mutations = {
   },
   setExportcsv (state, exportcsv) {
     state.exportcsv = exportcsv
+  },
+  setBestResult (state, bestResult) {
+    state.bestResult = bestResult
   }
 }
 
