@@ -1,6 +1,11 @@
 <template>
   <div class="main">
     <h2>Results</h2>
+    <div v-if="gsregOptions.exportcsv" class="text-right" :href="$constants.API.host + $constants.API.paths.results">
+      <md-button class="md-raised md-primary"> 
+        Download CSV result
+      </md-button>
+    </div>
     <nav class="results-menu">
       <ul>
         <li><md-button :class="activeTabClass(0)" @click.native="setActiveTab(0)">Best model results</md-button></li>
@@ -67,7 +72,57 @@
         </md-table>
       </div>
       <div class="results-tab" v-if="activeTab === 1">
-        Model averaging results
+        <md-table md-card>
+          <md-table-toolbar>
+            <h1 class="md-title">Model averaging results</h1>
+          </md-table-toolbar>
+
+          <md-table-row>
+            <md-table-cell colspan="3"></md-table-cell>
+            <md-table-cell colspan="3" class="dependent-variable"><b>Dependent variable: </b>{{ depvar }}</md-table-cell>
+          </md-table-row>
+
+          <md-table-row class="best-results-title">
+            <md-table-cell colspan="3"><b>Selected covariates</b></md-table-cell>
+            <md-table-cell><b>Coef.</b></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest"><b>Std.</b></md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest"><b>t-test</b></md-table-cell><md-table-cell v-else></md-table-cell>
+          </md-table-row>
+
+          <md-table-row v-for="(expvar, index) in expvars" :key="index" v-if="bestResult[expvar+'_b']">
+            <md-table-cell colspan="3"><b>{{ expvar }}</b></md-table-cell>
+            <md-table-cell>{{ bestResult[expvar+'_b'] }}</md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+          </md-table-row>
+
+          <md-table-row v-if="gsregOptions.intercept">
+            <md-table-cell colspan="3"><b>_cons</b></md-table-cell>
+            <md-table-cell>{{ bestResult['_cons_b'] }}</md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+          </md-table-row>
+
+          <md-table-row class="observations">
+            <md-table-cell colspan="3"><b>Observations</b></md-table-cell>
+            <md-table-cell colspan="3">{{ bestResult['nobs'] }}</md-table-cell>
+          </md-table-row>
+
+          <md-table-row >
+            <md-table-cell colspan="3"><b>{{ $constants.CRITERIA['r2adj'] }}</b></md-table-cell>
+            <md-table-cell colspan="3">{{ bestResult['r2adj'] }}</md-table-cell>
+          </md-table-row>
+
+          <md-table-row >
+            <md-table-cell colspan="3"><b>F-statistic</b></md-table-cell>
+            <md-table-cell colspan="3">{{ bestResult['F'] }}</md-table-cell>
+          </md-table-row>
+
+          <md-table-row >
+            <md-table-cell colspan="3"><b>Combined criteria</b></md-table-cell>
+            <md-table-cell colspan="3">{{ bestResult['order'] }}</md-table-cell>
+          </md-table-row>
+        </md-table>
       </div>
     </div>
     <div class="text-right">

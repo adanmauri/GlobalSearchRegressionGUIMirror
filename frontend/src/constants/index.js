@@ -4,7 +4,8 @@ export default {
     'paths': {
       'server_info': '/server-info',
       'load_database': '/upload',
-      'solve_file_options': '/solve'
+      'solve_file_options': '/solve',
+      'results': '/results'
     }
   },
   'WS': {
