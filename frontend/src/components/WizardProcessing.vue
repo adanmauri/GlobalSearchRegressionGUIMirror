@@ -21,7 +21,7 @@
         <div class="col">
           <ul>
             <li><b>Out-of-sample observations: </b>{{ gsregOptions.outsample }}</li>
-            <li><b>Ordering criteria: </b><span v-for="(criteria, index) in gsregOptions.criteria" :key="index">{{ criteria }} </span></li>
+            <li><b>Ordering criteria: </b><span class="criteria" v-for="(criteria, index) in gsregOptions.criteria" :key="index">{{ $constants.CRITERIA[criteria] }}</span></li>
             <li><b>Estimate residuals tests: </b><span v-if="gsregOptions.residualtest">Yes</span><span v-else>No</span></li>
             <li v-if="gsregOptions.residualtest"><b>Just white noise residuals: </b><span v-if="gsregOptions.keepwnoise">Yes</span><span v-else>No</span></li>
             <li><b>Estimate t-test: </b><span v-if="gsregOptions.ttest">Yes</span><span v-else>No</span></li>
@@ -30,7 +30,7 @@
         <div class="col">
           <ul>
             <li><b>Number of parallel workers: </b>{{ paraprocs }}</li>
-            <li><b>Calculation precision: </b>{{ gsregOptions.method }}</li>
+            <li><b>Calculation precision: </b>{{ $constants.METHODS[gsregOptions.method] }}</li>
             <li><b>Display model averaging results: </b><span v-if="gsregOptions.modelavg">Yes</span><span v-else>No</span></li>
           </ul>
         </div>
@@ -51,16 +51,21 @@
     <div v-else>
       <p>Server console</p>
       <div class="websocket-console">
-        <ul>
-          <li v-for="msg in messages">{{ msg }}</li>
-        </ul>
+        <div class="progress-spinner text-center">
+          <md-progress-spinner :md-diameter="150" :md-stroke="10" class="spinner" md-mode="indeterminate"></md-progress-spinner>
+        </div>
+        <transition name="slide-fade" mode="out-in">
+          <div :key="lastMessage" class="progress-text text-center">
+            {{ lastMessage }}
+          </div>
+        </transition>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import {mapState} from 'vuex'
+  import {mapState, mapActions} from 'vuex'
   // TODO: Create a better view
   export default {
     components: {},
@@ -68,20 +73,29 @@
     data () {
       return {
         messages: [],
+        lastMessage: null,
         processing: false
       }
     },
     created () {
       this.$options.sockets.onmessage = function (msg) {
         let parsedMessage = JSON.parse(msg.data)
-        if (parsedMessage.hasOwnProperty('done') && parsedMessage.done === true) {
-          // ir a otra pestaña y ofrecer resultados
+        if (parsedMessage.hasOwnProperty('done')) {
+          if (parsedMessage.done === true) {
+            this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: true })
+            this.nextStep()
+          } else {
+            alert('ERROR')
+          }
         }
-        this.messages.push(JSON.parse(msg.data))
+        console.log(parsedMessage)
+        this.messages.push(parsedMessage)
+        this.lastMessage = parsedMessage['message']
       }
       this.sendMessage()
     },
     methods: {
+      ...mapActions(['nextStep']),
       sendMessage (msg = {}) {
         msg['user-token'] = this.$store.state.userToken
         this.$socket.sendObj(msg)
@@ -90,6 +104,9 @@
         this.$store.commit('setNavBlocked', true)
         this.$store.commit('setNavHidden', true)
         this.processing = true
+        var requestUrl = this.$constants.API.host + this.$constants.API.paths.solve_file_options + '/' + this.$store.state.server.operationId + '/' + btoa(JSON.stringify(this.$store.state.gsregOptions))
+        this.$http.get(requestUrl).then(response => {
+        })
       }
     },
     computed: {
@@ -123,5 +140,26 @@
 
   h4 {
     font-size: 16px;
+  }
+
+  .criteria + .criteria:before {
+    content: ", ";
+  }
+
+  .slide-fade-enter-active {
+    transition: all .3s ease;
+  }
+  .slide-fade-leave-active {
+    transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+  .slide-fade-enter {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+
+  .slide-fade-leave-to
+  /* .slide-fade-leave-active for <2.1.8 */ {
+    transform: translateY(10px);
+    opacity: 0;
   }
 </style>

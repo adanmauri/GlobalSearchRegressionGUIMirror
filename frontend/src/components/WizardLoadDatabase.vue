@@ -51,7 +51,7 @@
     filters: {
       speed (value) {
         if (value / 1024 < 1024) {
-          return (value / 1024) + ' KB/s'
+          return (value / 1024).toFixed(0) + ' KB/s'
         }
         return (value / 1024 / 1024).toFixed(2) + ' MB/s'
       }
@@ -197,5 +197,22 @@
     font-size: 40px;
     color: #fff;
     padding: 0;
+  }
+
+  .progress-spinner {
+    color: #6682e0;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .progress-text {
+    font-size: 20px;
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
   }
 </style>

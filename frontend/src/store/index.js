@@ -17,7 +17,13 @@ const state = {
   },
   server: {
     nworkers: null,
-    operationId: null
+    ncores: null,
+    operationId: null,
+    juliaVersion: null,
+    gsregVersion: null,
+    jobQueue: {
+      length: null
+    }
   },
   gsregOptions: {
     depvar: null,
@@ -45,6 +51,9 @@ const getters = {
   },
   getServerNworkers (state) {
     return state.server.nworkers
+  },
+  getServerNcores (state) {
+    return state.server.ncores
   },
   getServerOperationId (state) {
     return state.server.operationId
@@ -153,6 +162,18 @@ const mutations = {
   },
   setServerNworkers (state, nworkers) {
     state.server.nworkers = nworkers
+  },
+  setServerNcores (state, ncores) {
+    state.server.ncores = ncores
+  },
+  setServerJuliaVersion (state, juliaVersion) {
+    state.server.juliaVersion = juliaVersion
+  },
+  setServerGsregVersion (state, gsregVersion) {
+    state.server.gsregVersion = gsregVersion
+  },
+  setServerJobQueueLength (state, length) {
+    state.server.jobQueue.length = length
   },
   setServerOperationId (state, operationId) {
     state.server.operationId = operationId

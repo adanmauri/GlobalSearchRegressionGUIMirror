@@ -1,12 +1,14 @@
 export default {
   'API': {
-    'host': '//localhost:8000',
+    'host': 'http://d5e7a0f4.ngrok.io',
     'paths': {
-      'load_database': '/upload'
+      'server_info': '/server-info',
+      'load_database': '/upload',
+      'solve_file_options': '/solve'
     }
   },
   'WS': {
-    'url': 'ws://localhost:8000'
+    'url': 'ws://d5e7a0f4.ngrok.io'
   },
   'INSAMPLE_MIN_SIZE': 20,
   'STEPS': [
@@ -36,48 +38,18 @@ export default {
       'component': 'WizardResults'
     }
   ],
-  'CRITERIA': [
-    {
-      'name': 'r2adj',
-      'label': 'Adjusted R²'
-    },
-    {
-      'name': 'bic',
-      'label': 'BIC'
-    },
-    {
-      'name': 'aic',
-      'label': 'AIC'
-    },
-    {
-      'name': 'aicc',
-      'label': 'AIC Corrected'
-    },
-    {
-      'name': 'cp',
-      'label': 'Mallows\'s Cp'
-    },
-    {
-      'name': 'rmse',
-      'label': 'RMSE'
-    },
-    {
-      'name': 'rmseout',
-      'label': 'RMSE OUT'
-    },
-    {
-      'name': 'sse',
-      'label': 'SSE'
-    }
-  ],
-  'METHODS': [
-    {
-      'name': 'fast',
-      'label': 'Fast'
-    },
-    {
-      'name': 'precise',
-      'label': 'Precise'
-    }
-  ]
+  'CRITERIA': {
+    'r2adj': 'Adjusted R²',
+    'bic': 'BIC',
+    'aic': 'AIC',
+    'aicc': 'AIC Corrected',
+    'cp': 'Mallows\'s Cp',
+    'rmse': 'RMSE',
+    'rmseout': 'RMSE OUT',
+    'sse': 'SSE'
+  },
+  'METHODS': {
+    'fast': 'Fast',
+    'precise': 'Precise'
+  }
 }

@@ -32,6 +32,13 @@
     computed: {},
     methods: {},
     created () {
+      this.$http.get(this.$constants.API.host + this.$constants.API.paths.server_info).then(response => {
+        this.$store.commit('setServerNworkers', response.body.nworkers)
+        this.$store.commit('setServerNcores', response.body.ncores)
+        this.$store.commit('setServerJuliaVersion', response.body.julia_version)
+        this.$store.commit('setServerGsregVersion', response.body.gsreg_version)
+        this.$store.commit('setServerJobQueueLength', response.body.job_queue.length)
+      })
     }
   }
 </script>
@@ -116,6 +123,4 @@
       padding-top: 10px;
     }
   }
-
-
 </style>

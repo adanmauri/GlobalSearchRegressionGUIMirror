@@ -21,7 +21,7 @@
               <md-field>
                 <label for="criteria" title="Ordering criteria">Ordering criteria</label>
                 <md-select v-model="criteria" placeholder="Ordering criteria" multiple>
-                  <md-option v-for="(criteria, index) in $constants.CRITERIA" :key="index" :value="criteria.name" :disabled="criteria.name==='rmseout' && parseInt(outsample)===0" >{{ criteria.label }}</md-option>
+                  <md-option v-for="(criteria, index) in $constants.CRITERIA" :key="index" :value="index" :disabled="index==='rmseout' && parseInt(outsample)===0" >{{ criteria }}</md-option>
                 </md-select>
               </md-field>
             </div>
@@ -53,7 +53,7 @@
             <div class="md-layout-item">
               <md-field>
                 <label for="paraprocs" title="Number of parallel workers">Number of parallel workers</label>
-                <md-input v-model="paraprocs" type="number" min="1" :max="nworkers" placeholder="Number of parallel workers"></md-input>
+                <md-input v-model="paraprocs" type="number" min="1" :max="ncores" placeholder="Number of parallel workers"></md-input>
               </md-field>
             </div>
           </div>
@@ -62,7 +62,7 @@
               <md-field>
                 <label for="method" title="Calculation precision (Float32/Float64)">Calculation precision</label>
                 <md-select v-model="method" placeholder="Calculation precision">
-                  <md-option v-for="(method, index) in $constants.METHODS" :key="index" :value="method.name">{{ method.label }}</md-option>
+                  <md-option v-for="(method, index) in $constants.METHODS" :key="index" :value="index">{{ method }}</md-option>
                 </md-select>
               </md-field>
             </div>
@@ -129,7 +129,7 @@ export default {
   },
   computed: {
     ...mapState(['datanames']),
-    ...mapGetters(['getInputDataNobs', 'getServerNworkers', 'getGSRegOptionsExpvars', 'getGSRegOptionsIntercept', 'getGSRegOptionsResidualtest', 'getGSRegOptionsResidualtest', 'getGSRegOptionsKeepwnoise', 'getGSRegOptionsTtest', 'getGSRegOptionsOrderresults', 'getGSRegOptionsModelavg', 'getGSRegOptionsOutsample', 'getGSRegOptionsCsv', 'getGSRegOptionsMethod', 'getGSRegOptionsCriteria']),
+    ...mapGetters(['getInputDataNobs', 'getServerNcores', 'getGSRegOptionsExpvars', 'getGSRegOptionsIntercept', 'getGSRegOptionsResidualtest', 'getGSRegOptionsResidualtest', 'getGSRegOptionsKeepwnoise', 'getGSRegOptionsTtest', 'getGSRegOptionsOrderresults', 'getGSRegOptionsModelavg', 'getGSRegOptionsOutsample', 'getGSRegOptionsCsv', 'getGSRegOptionsMethod', 'getGSRegOptionsCriteria']),
     outsampleMax () {
       return utils.outsampleMax(this.getInputDataNobs, this.$constants.INSAMPLE_MIN_SIZE, this.getGSRegOptionsExpvars, this.getGSRegOptionsIntercept)
     },
@@ -138,9 +138,9 @@ export default {
         return this.$store.state.navHidden
       }
     },
-    nworkers: {
+    ncores: {
       get () {
-        return this.getServerNworkers
+        return this.getServerNcores
       }
     },
     residualtest: {
