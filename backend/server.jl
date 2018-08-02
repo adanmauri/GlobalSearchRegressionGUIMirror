@@ -25,13 +25,15 @@ job_queue = Queue(GSRegJob)
 job_queue_cond = Condition()
 
 #Consume job_queue after notification
-@async begin
+@schedule begin
     while true
+        info("waiting for new jobs")
         wait(job_queue_cond)
         while !(isempty(job_queue))
+            info("job consumed")
             gsreg(dequeue!(job_queue))
-            gc() #keep memory usage low
         end
+        info("jobs consumed")
     end
 end
 
@@ -42,6 +44,7 @@ function enqueue_job(job::GSRegJob)
     global job_queue
     global job_queue_cond
     enqueue!(job_queue, job)
+    info("job enqueued")
     notify(job_queue_cond)
     job
 end
@@ -63,11 +66,17 @@ function gsreg(job::GSRegJob)
         sendMessage(job.hash, Dict("operation_id" => job.id, "message" => "Reading data"))
         data = CSV.read(job.file)
         sendMessage(job.hash, Dict("operation_id" => job.id, "message" => "Executing GSReg"))
-        res = GSReg.gsreg(job.options["formula"], data;
-            onmessage = message -> sendMessage(job.hash, Dict("operation_id" => job.id, "message" => message)) )
-        sendMessage(job.hash, Dict("operation_id" => job.id, "done" => true))
-     catch
-        sendMessage(job.hash, Dict("operation_id" => job.id, "message" => "Execution failed"))
+
+        opt = job.options["options"]
+        opt = convert(Dict{Symbol, Any}, opt)
+
+        res = GSReg.gsreg(job.options["depvar"] * " " * join(job.options["expvars"], " "), data; opt...,
+                    onmessage = message -> sendMessage(job.hash, Dict("operation_id" => job.id, "message" => message)) )
+        sendMessage(job.hash, Dict("operation_id" => job.id, "done" => true, "message" => "Successful operation", "result" => GSReg.to_dict(res)))
+    catch e
+        io = IOBuffer()
+        showerror(io, e)
+        sendMessage(job.hash, Dict("operation_id" => job.id, "done" => false, "message" => String(take!(io))))
     end
 end
 
@@ -142,37 +151,40 @@ function authHeader(app, req)
 end
 
 function cloudLimits(data, options)
+    error("The selected formula it's too large to be computed online. To perform this operation please install Julia and GSReg.jl in your local environment, initialize Julia and run the following command:" * constructCommand(options))
+end
 
-    error("The selected formula it's too large to compute in the cloud, if you want to do it, you can install GSReg in your infrastructure and run the next command:")
+function constructCommand(options)
+    command = """Pkg.add("GSReg")
+using GSReg, CSV
+data = CSV.read("yourcsvfile.csv")
+res = GSReg.gsreg("", data; opts...)"""
 end
 
 """
     TODO:
 """
-function validateInput(data, opt)
+function validateInput(opt)
     """
     # Input should be a dict with the next required keys:
-    "opt" =>
-        "workers" ?
-        "file": String #hash del archivo
-        "formula": String, #variables a procesar
-        "options" =>
-            "depvar": String,
-            "expvars": [String],
-            "intercept": Boolean,
-            "time": String,
-            "residualtest": Boolean,
-            "keepwnoise": Boolean,
-            "ttest": Boolean,
-            "orderresults": Boolean,
-            "modelavg": Boolean,
-            "outsample": Integer,
-            "csv": String,
-            "method": "fast"|"precise",
-            "addprocs": 0,
-            "criteria": ["r2adj","bic","aic","aicc","cp","rmse","rmseout","sse"]
-    }
+    "workers": ?
+    "depvar": String,
+    "expvars": [String],
+    "options":
+        "intercept": Boolean,
+        "time": String,
+        "residualtest": Boolean,
+        "keepwnoise": Boolean,
+        "ttest": Boolean,
+        "orderresults": Boolean,
+        "modelavg": Boolean,
+        "outsample": Integer,
+        "csv": String,
+        "method": "fast"|"precise",
+        "addprocs": 0,
+        "criteria": ["r2adj","bic","aic","aicc","cp","rmse","rmseout","sse"]
     """
+    println(opt)
     opt
 end
 
@@ -209,7 +221,7 @@ function upload(req)
     end
 
     # if we're in cloud solution, limit upload to 100MB
-    if ( ENV["ENVIRONMENT"] == "cloud" )
+    if ( haskey(ENV, "ENVIRONMENT") && ENV["ENVIRONMENT"] == "cloud" )
         if ( filesize(tempfile) > 100 * (1000 ^ 2) )
             error("Max filesize (100MB) exceeded")
         end
@@ -226,15 +238,15 @@ function upload(req)
     )
 end
 
-function server_info()
+function server_info(req)
     global job_queue
     Dict(
+        "ncores" => Sys.CPU_CORES,
         "nworkers" => nworkers(),
-        "gsreg_version" => GSREG_VERSION,
-        "julia_version" => VERSION,
+        "gsreg_version" => string(GSREG_VERSION),
+        "julia_version" => string(VERSION),
         "job_queue" => Dict(
-            "length" => length(job_queue),
-            "estimate" => "10m"
+            "length" => length(job_queue)
         )
     )
 end
@@ -258,15 +270,6 @@ function solve(req)
     end
 
     """
-    Try to read the file from the filesystem and validate CSV format
-    """
-    data = try
-        CSV.read(tempfile)
-    catch
-        error("An error ocurred when the file was being readed.")
-    end
-
-    """
     Input options should be a valid base64:json encoded String.
     """
     options = try
@@ -277,16 +280,14 @@ function solve(req)
     end
 
     # validate correct use of options
-    opt = validateInput(data, options)
-
-    # set number of workers
+    opt = validateInput(options)
 
     # if we're in cloud solution, skip computations larger than our capabilities
-    if ( ENV["ENVIRONMENT"] == "cloud" )
+    if ( haskey(ENV, "ENVIRONMENT") && ENV["ENVIRONMENT"] == "cloud" )
         cloudLimits(data, options)
     end
 
-    # Execute regression in background, report results trough ws
+    # Enqueue the job
     job = GSRegJob(tempfile, req[:token], opt)
     enqueue_job(job)
 
@@ -312,12 +313,10 @@ function wsapp(req, ws)
             id = msg["user-token"]
             if !haskey(connections, id)
                 connections[id] = ws
-                sendMessage(ws, Dict("ok" => true, "message" => "got ya"))
-            else
-                sendMessage(ws, Dict("ok" => true, "message" => "loud & clear"))
             end
+            sendMessage(ws, Dict("ok" => true, "message" => "Waiting in queue"))
         catch
-            sendMessage(ws, Dict("ok" => false, "message" => "the next message must be in JSON format"))
+            sendMessage(ws, Dict("ok" => false, "message" => "The next message must be in JSON format"))
         end
     end
     # TODO: find some way for delete connection with any reference
@@ -335,9 +334,10 @@ extension(f) = ormatch(match(r"(?<=\.)[^\.\\/]*$", f), "")
 
 fileheaders(f) = Dict("Content-Type" => get(mimetypes, extension(f), "application/octet-stream"))
 
-fileresponse(f) = Dict(:file => f,
+fileresponse(f) = Dict(
                     :body => read(f),
-                    :headers => fileheaders(f))
+                    :headers => fileheaders(f)
+                    )
 
 fresp(f) =
   isfile(f) ? fileresponse(f) :
@@ -351,7 +351,6 @@ end
 
 @app app = (
     stack(Mux.todict, logRequest, Mux.splitquery, errorCatch, authHeader, Mux.toresponse),
-    route("/static/:resource", staticfiles(false)),
     page("/upload", req -> toJsonWithCors(upload(req), req)),
     page("/server-info", req -> toJsonWithCors(server_info(req), req)),
     page("/solve/:hash/:options", req -> toJsonWithCors(solve(req), req)),
