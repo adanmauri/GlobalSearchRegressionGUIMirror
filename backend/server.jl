@@ -7,7 +7,7 @@ using DotEnv
 DotEnv.config()
 println("Package loading took this long: ", toq())
 
-const SERVER_BASE_DIR = ""
+const SERVER_BASE_DIR = "./static"
 const GSREG_VERSION = Pkg.installed("GSReg")
 
 struct GSRegJob
@@ -68,7 +68,6 @@ function gsreg(job::GSRegJob)
         sendMessage(job.hash, Dict("operation_id" => job.id, "message" => "Executing GSReg"))
 
         opt = job.options["options"]
-        opt = convert(Dict{Symbol, Any}, opt)
 
         res = GSReg.gsreg(job.options["depvar"] * " " * join(job.options["expvars"], " "), data; opt...,
                     onmessage = message -> sendMessage(job.hash, Dict("operation_id" => job.id, "message" => message)) )
@@ -180,11 +179,31 @@ function validateInput(opt)
         "modelavg": Boolean,
         "outsample": Integer,
         "csv": String,
-        "method": "fast"|"precise",
-        "addprocs": 0,
+        "method": String,
         "criteria": ["r2adj","bic","aic","aicc","cp","rmse","rmseout","sse"]
     """
-    println(opt)
+
+    options = Dict{Symbol,Any}()
+    opt_types = Dict(
+        "intercept" => Bool,
+        "time" => string,
+        "residualtest" => Bool,
+        "keepwnoise" => Bool,
+        "ttest" => Bool,
+        "orderresults" => Bool,
+        "modelavg" => Bool,
+        "outsample" => Integer,
+        "csv" => string,
+        "method" => string,
+        "criteria" => Array{Symbol}
+    )
+    for (name, value) in opt["options"]
+        if value != nothing
+            println(name, value)
+            push!(options, Pair(Symbol(name), opt_types[name](value)) )
+        end
+    end
+    opt["options"] = options
     opt
 end
 
@@ -345,12 +364,13 @@ fresp(f) =
   error("$f doesn't exist")
 
 function staticfiles(dirs=true)
-    branch(req -> validpath(joinpath(SERVER_BASE_DIR, req[:path]..., req[:params][:resource]), dirs=dirs),
-           req -> fresp(joinpath(SERVER_BASE_DIR, req[:path]..., req[:params][:resource])))
+    branch( req -> validpath(joinpath(SERVER_BASE_DIR, req[:path]...); dirs=dirs),
+            req -> fresp(joinpath(SERVER_BASE_DIR, req[:path]...)))
 end
 
 @app app = (
     stack(Mux.todict, logRequest, Mux.splitquery, errorCatch, authHeader, Mux.toresponse),
+    staticfiles(false),
     page("/upload", req -> toJsonWithCors(upload(req), req)),
     page("/server-info", req -> toJsonWithCors(server_info(req), req)),
     page("/solve/:hash/:options", req -> toJsonWithCors(solve(req), req)),
