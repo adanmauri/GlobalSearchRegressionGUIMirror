@@ -216,7 +216,7 @@ function upload(req)
     end
 
     global files_dict
-    id = String(Base.Random.uuid4())
+    id = string(Base.Random.uuid4())
     push!(files_dict, Pair(id, tempfile))
 
     Dict(
