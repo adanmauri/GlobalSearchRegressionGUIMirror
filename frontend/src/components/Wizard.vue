@@ -4,9 +4,8 @@
       <div class="row">
         <div class="col">
           <div class="progress step-progress">
-            <div class="progress-bar step-progress-bar" role="progressbar"
-                 :style="{ width: getProgress+'%' }" :aria-valuenow="getProgress" aria-valuemin="0"
-                 aria-valuemax="100"></div>
+            <div class="progress-bar step-progress-bar" role="progressbar" :style="{ width: getProgress+'%' }"
+                 :aria-valuenow="getProgress" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
         </div>
       </div>
@@ -26,17 +25,20 @@
     <div class="container nav-buttons">
       <div class="row">
         <div v-if="currentStep-1 >= 0" class="col nav-col nav-prev-col">
-          <md-button class="md-icon-button md-raised nav-button nav-prev-button" @click.native="setStep(currentStep-1)" :hidden="navHidden" >
-            <font-awesome-icon icon="chevron-left" />
+          <md-button class="md-icon-button md-raised nav-button nav-prev-button"
+                     @click.native="setStep(currentStep-1)" :hidden="navHidden">
+            <font-awesome-icon icon="chevron-left"/>
           </md-button>
           <span v-if="currentStep-1 >= 0"
                 class="nav-label nav-prev-label">{{ $constants.STEPS[currentStep-1].label }}</span>
         </div>
-        <div v-if="currentStep+1 < $constants.STEPS.length" class="col nav-col nav-next-col">
-          <md-button class="md-icon-button md-raised nav-button nav-next-button" :class="availableClass" :disabled="!completeSteps[currentStep]" :hidden="navHidden" @click.native="setStep(currentStep+1)" >
-            <font-awesome-icon icon="chevron-right" />
+        <div v-if="currentStep + 1 < $constants.STEPS.length" class="col nav-col nav-next-col">
+          <md-button class="md-icon-button md-raised nav-button nav-next-button" :class="availableClass"
+                     :disabled="!completeSteps[currentStep]"
+                     @click.native="setStep(currentStep+1)" :hidden="navHidden">
+            <font-awesome-icon icon="chevron-right"/>
           </md-button>
-          <span v-if="currentStep+1 < $constants.STEPS.length" class="nav-label nav-next-label">{{ $constants.STEPS[currentStep+1].label }}</span>
+          <span v-if="currentStep + 1 < $constants.STEPS.length" class="nav-label nav-next-label">{{ $constants.STEPS[currentStep+1].label }}</span>
         </div>
       </div>
     </div>
@@ -44,76 +46,76 @@
 </template>
 
 <script>
-import {mapState, mapActions} from 'vuex'
-import WizardLoadDatabase from './WizardLoadDatabase.vue'
-import WizardSelectVariables from './WizardSelectVariables.vue'
-import WizardSettings from './WizardSettings.vue'
-import WizardProcessing from './WizardProcessing.vue'
-import WizardResults from './WizardResults.vue'
+  import {mapState, mapActions} from 'vuex'
+  import WizardLoadDatabase from './WizardLoadDatabase.vue'
+  import WizardSelectVariables from './WizardSelectVariables.vue'
+  import WizardSettings from './WizardSettings.vue'
+  import WizardProcessing from './WizardProcessing.vue'
+  import WizardResults from './WizardResults.vue'
 
-export default {
-  name: 'Wizard',
-  components: {
-    WizardLoadDatabase,
-    WizardSelectVariables,
-    WizardSettings,
-    WizardProcessing,
-    WizardResults
-  },
-  created () {
-    this.setStep(0)
-  },
-  data () {
-    return {}
-  },
-  computed: {
-    ...mapState(['currentStep', 'completeSteps', 'navHidden']),
-    getProgress () {
-      return this.$store.state.currentStep * 100 / 5
+  export default {
+    name: 'Wizard',
+    components: {
+      WizardLoadDatabase,
+      WizardSelectVariables,
+      WizardSettings,
+      WizardProcessing,
+      WizardResults
     },
-    availableClass () {
-      return { available: this.$store.state.completeSteps[this.$store.state.currentStep] }
-    }
-  },
-  methods: {
-    ...mapActions(['prevStep', 'nextStep']),
-    stepClass (step) {
-      return {
-        active: this.$store.state.currentStep === step,
-        complete: this.$store.state.completeSteps[step],
-        disabled: (this.$store.state.navHidden) ? true : ((step > 0) ? !this.$store.state.completeSteps[step - 1] : false),
-        set: this.$store.state.setSteps[step]
+    created () {
+      this.setStep(0)
+    },
+    data () {
+      return {}
+    },
+    computed: {
+      ...mapState(['currentStep', 'completeSteps', 'navHidden']),
+      getProgress () {
+        return this.$store.state.currentStep * 100 / 5
+      },
+      availableClass () {
+        return {available: this.$store.state.completeSteps[this.$store.state.currentStep]}
       }
     },
-    setStep (step) {
-      if (this.$store.state.setSteps[step] || (step - 1 >= 0 && this.$store.state.completeSteps[step - 1]) || step === 0) {
-        if (!this.$store.state.navHidden) {
-          this.$store.commit('setCurrentStep', step)
-          // TODO: Unhardcode step
-          switch (step) {
-            case 0:
-              this.$store.commit('restartOperation', true)
-              this.$store.commit('setNavBlocked', true)
-              this.$store.commit('setNavHidden', true)
-              break
-            case 1:
-              this.$store.commit('setNavBlocked', false)
-              this.$store.commit('setNavHidden', false)
-              break
-            case 2:
-              this.$store.commit('setNavBlocked', false)
-              this.$store.commit('setNavHidden', false)
-              break
-            case 3:
-              this.$store.commit('setNavBlocked', false)
-              this.$store.commit('setNavHidden', false)
-              break
+    methods: {
+      ...mapActions(['prevStep', 'nextStep']),
+      stepClass (step) {
+        return {
+          active: this.$store.state.currentStep === step,
+          complete: this.$store.state.completeSteps[step],
+          disabled: (this.$store.state.navHidden) ? true : ((step > 0) ? !this.$store.state.completeSteps[step - 1] : false),
+          set: this.$store.state.setSteps[step]
+        }
+      },
+      setStep (step) {
+        if (this.$store.state.setSteps[step] || (step - 1 >= 0 && this.$store.state.completeSteps[step - 1]) || step === 0) {
+          if (!this.$store.state.navHidden) {
+            this.$store.commit('setCurrentStep', step)
+            // TODO: Unhardcode step
+            switch (step) {
+              case 0:
+                this.$store.commit('restartOperation', true)
+                this.$store.commit('setNavBlocked', true)
+                this.$store.commit('setNavHidden', true)
+                break
+              case 1:
+                this.$store.commit('setNavBlocked', false)
+                this.$store.commit('setNavHidden', false)
+                break
+              case 2:
+                this.$store.commit('setNavBlocked', false)
+                this.$store.commit('setNavHidden', false)
+                break
+              case 3:
+                this.$store.commit('setNavBlocked', false)
+                this.$store.commit('setNavHidden', false)
+                break
+            }
           }
         }
       }
     }
   }
-}
 </script>
 
 <style lang="scss">

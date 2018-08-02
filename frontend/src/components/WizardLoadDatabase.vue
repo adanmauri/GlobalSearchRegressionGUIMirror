@@ -9,15 +9,14 @@
       calculation.</p>
     <div class="text-center">
       <file-upload
-          ref="upload"
-          v-model="files"
-          :custom-action="customAction"
-          @input-filter="inputFilter"
-          @input-file="inputFile"
-          accept="text/csv"
-          :extensions="['csv']"
-          :drop="true">
-          
+        ref="upload"
+        v-model="files"
+        :custom-action="customAction"
+        @input-filter="inputFilter"
+        @input-file="inputFile"
+        accept="text/csv"
+        :extensions="['csv']"
+        :drop="true">
         <span class="btn select-file" v-if="!files.length">
           Select CSV file
         </span>
@@ -25,6 +24,7 @@
     </div>
 
     <div v-for="(file, index) in files" :key="index">
+      {{ file }}
       <span><font-awesome-icon icon="file" class="file-icon"/></span> <span>{{ file.name }}</span>
       <div class="progress file-upload-progress">
         <div class="progress-bar file-upload-progress-bar" role="progressbar"
@@ -36,7 +36,8 @@
 
     <div class="upload-button-container text-right" v-if="files.length">
       <md-button class="md-raised md-primary upload-file" v-show="!$refs.upload || !$refs.upload.active"
-                 @click.prevent="$refs.upload.active = true">Start upload</md-button>
+                 @click.prevent="$refs.upload.active = true">Start upload
+      </md-button>
     </div>
   </div>
 </template>
@@ -67,7 +68,7 @@
     methods: {
       ...mapActions(['nextStep']),
       validate () {
-        this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: true })
+        this.$store.commit('updateCompleteStep', {step: this.$store.state.currentStep, complete: true})
       },
       customAction (file, component) {
         var xhr = new XMLHttpRequest()
@@ -78,6 +79,7 @@
       inputFilter (newFile, oldFile, prevent) {
         if (newFile && !oldFile) {
           if (!/\.csv$/i.test(newFile.name)) {
+            alert('The file must be .csv')
             return prevent()
           }
         }
@@ -105,12 +107,12 @@
 <style>
   .btn.select-file,
   button.upload-file {
-    background: #6682e0!important;
+    background: #6682e0 !important;
   }
 
   .btn.select-file {
     color: #fff;
-    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
     min-width: 88px;
     height: 36px;
     margin: 6px 8px;

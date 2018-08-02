@@ -4,7 +4,7 @@
       <h2>Request details</h2>
       <p>Please confirm that the selected options are correct before starting.
       <h3>Selected variables</h3>
-      <hr/> 
+      <hr/>
       <div class="row">
         <div class="col">
           <ul>
@@ -74,7 +74,7 @@
     created () {
       this.$options.sockets.onmessage = function (msg) {
         let parsedMessage = JSON.parse(msg.data)
-        if (parsedMessage.hasOwnProperty('finish') && parsedMessage.finish === true) {
+        if (parsedMessage.hasOwnProperty('done') && parsedMessage.done === true) {
           // ir a otra pestaña y ofrecer resultados
         }
         this.messages.push(JSON.parse(msg.data))
