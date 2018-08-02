@@ -216,7 +216,7 @@ function upload(req)
     end
 
     global files_dict
-    id = Base.Random.uuid4()
+    id = String(Base.Random.uuid4())
     push!(files_dict, Pair(id, tempfile))
 
     Dict(
@@ -278,6 +278,8 @@ function solve(req)
 
     # validate correct use of options
     opt = validateInput(data, options)
+
+    # set number of workers
 
     # if we're in cloud solution, skip computations larger than our capabilities
     if ( ENV["ENVIRONMENT"] == "cloud" )
@@ -351,6 +353,7 @@ end
     stack(Mux.todict, logRequest, Mux.splitquery, errorCatch, authHeader, Mux.toresponse),
     route("/static/:resource", staticfiles(false)),
     page("/upload", req -> toJsonWithCors(upload(req), req)),
+    page("/server-info", req -> toJsonWithCors(server_info(req), req)),
     page("/solve/:hash/:options", req -> toJsonWithCors(solve(req), req)),
     Mux.notfound()
 )

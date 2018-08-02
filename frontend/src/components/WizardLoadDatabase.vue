@@ -24,7 +24,6 @@
     </div>
 
     <div v-for="(file, index) in files" :key="index">
-      {{ file }}
       <span><font-awesome-icon icon="file" class="file-icon"/></span> <span>{{ file.name }}</span>
       <div class="progress file-upload-progress">
         <div class="progress-bar file-upload-progress-bar" role="progressbar"
@@ -90,7 +89,7 @@
             // TODO: Validate response values
             this.$store.commit('setInputDataNobs', newFile.response.nobs)
             this.$store.commit('setInputDataDatanames', newFile.response.datanames)
-            this.$store.commit('setServerNworkers', newFile.response.nworkers)
+            // this.$store.commit('setServerNworkers', newFile.response.nworkers)
             this.$store.commit('setServerOperationId', newFile.response.filename)
             this.validate()
             // TODO: Remove to other place
