@@ -71,7 +71,7 @@
     computed: {
       ...mapState(['currentStep', 'completeSteps', 'navHidden']),
       getProgress () {
-        return this.$store.state.currentStep * 100 / 5
+        return this.$store.state.currentStep * 100 / (this.$constants.STEPS.length - 1)
       },
       availableClass () {
         return {available: this.$store.state.completeSteps[this.$store.state.currentStep]}
@@ -119,6 +119,7 @@
 </script>
 
 <style lang="scss">
+ 
   .wizard .step-progress {
     margin-top: 50px;
     height: 7px;
@@ -132,8 +133,17 @@
     transform: translateY(-39%);
   }
 
-  .wizard .step-button-container {
+  .wizard .step-buttons .step-button-container {
+    padding: 0;
     text-align: center;
+  }
+
+  .wizard .step-buttons .step-button-container:first-child {
+    margin-left: -50px;
+  }
+
+  .wizard .step-buttons .step-button-container:last-child {
+    margin-right: -50px;
   }
 
   .wizard .step-button-container .step-button {
@@ -252,4 +262,5 @@
   .nav-next-button:hover + .nav-next-label {
     opacity: 100;
   }
+  
 </style>

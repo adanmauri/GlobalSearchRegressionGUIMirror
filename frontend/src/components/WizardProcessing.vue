@@ -7,9 +7,9 @@
       <hr/>
       <div class="row">
         <div class="col">
-          <ul>
-            <li><b>Dependent variable: </b>{{ gsregOptions.depvar }}</li>
-            <li><b>Explanatory variables: </b><span v-for="(expvar, index) in gsregOptions.expvars" :key="index">{{ expvar }} </span></li>
+          <ul class="gsregOptions">
+            <li><b>Dependent variable: </b>{{ depvar }}</li>
+            <li><b>Explanatory variables: </b><span v-for="(expvar, index) in expvars" :key="index" class="expvar">{{ expvar }}</span></li>
             <li><b>Time variable: </b><span v-if="gsregOptions.time">{{ gsregOptions.time }}</span><span v-else>No selected</span></li>
             <li><b>Include intercept: </b><span v-if="gsregOptions.intercept">Yes</span><span v-else>No</span></li>
           </ul>
@@ -19,7 +19,7 @@
       <hr />
       <div class="row">
         <div class="col">
-          <ul>
+          <ul class="gsregOptions">
             <li><b>Out-of-sample observations: </b>{{ gsregOptions.outsample }}</li>
             <li><b>Ordering criteria: </b><span class="criteria" v-for="(criteria, index) in gsregOptions.criteria" :key="index">{{ $constants.CRITERIA[criteria] }}</span></li>
             <li><b>Estimate residuals tests: </b><span v-if="gsregOptions.residualtest">Yes</span><span v-else>No</span></li>
@@ -28,7 +28,7 @@
           </ul>
         </div>
         <div class="col">
-          <ul>
+          <ul class="gsregOptions">
             <li><b>Number of parallel workers: </b>{{ paraprocs }}</li>
             <li><b>Calculation precision: </b>{{ $constants.METHODS[gsregOptions.method] }}</li>
             <li><b>Display model averaging results: </b><span v-if="gsregOptions.modelavg">Yes</span><span v-else>No</span></li>
@@ -37,7 +37,7 @@
       </div>
       <div class="row">
         <div class="col">
-          <ul>
+          <ul class="gsregOptions">
             <li><b>Sort all models: </b><span v-if="gsregOptions.orderresults">Yes</span><span v-else>No</span></li>
             <li><b>Export to CSV: </b><span v-if="gsregOptions.exportcsv">Yes</span><span v-else>No</span></li>
             <li v-if="gsregOptions.exportcsv"><b>Output filename: </b>{{ gsregOptions.csv }}</li>
@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="text-right">
-        <md-button class="md-raised md-primary start-solve" @click.native="solve()">Start to solve</md-button>
+        <md-button class="md-raised md-primary start-solve" @click.native="solve()">Solve</md-button>
       </div>
     </div>
     <div v-else>
@@ -82,6 +82,7 @@
         let parsedMessage = JSON.parse(msg.data)
         if (parsedMessage.hasOwnProperty('done')) {
           if (parsedMessage.done === true) {
+            this.$store.commit('setBestResult', parsedMessage.result.bestresult)
             this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: true })
             this.nextStep()
           } else {
@@ -104,13 +105,18 @@
         this.$store.commit('setNavBlocked', true)
         this.$store.commit('setNavHidden', true)
         this.processing = true
-        var requestUrl = this.$constants.API.host + this.$constants.API.paths.solve_file_options + '/' + this.$store.state.server.operationId + '/' + btoa(JSON.stringify(this.$store.state.gsregOptions))
+        var request = {
+          'depvar': this.$store.state.depvar,
+          'expvars': this.$store.state.expvars,
+          'options': this.$store.state.gsregOptions
+        }
+        var requestUrl = this.$constants.API.host + this.$constants.API.paths.solve_file_options + '/' + this.$store.state.server.operationId + '/' + btoa(JSON.stringify(request))
         this.$http.get(requestUrl).then(response => {
         })
       }
     },
     computed: {
-      ...mapState(['gsregOptions', 'paraprocs', 'exportcsv'])
+      ...mapState(['depvar', 'expvars', 'gsregOptions', 'paraprocs', 'exportcsv'])
     }
   }
 </script>
@@ -131,7 +137,7 @@
     margin: 10px auto;
   }
 
-  ul {
+  .gsregOptions {
     list-style: none;
     padding-left: 0;
     margin-top: 10px;
@@ -140,6 +146,10 @@
 
   h4 {
     font-size: 16px;
+  }
+
+  .expvar + .expvar:before {
+    content: ", ";
   }
 
   .criteria + .criteria:before {
@@ -161,5 +171,9 @@
   /* .slide-fade-leave-active for <2.1.8 */ {
     transform: translateY(10px);
     opacity: 0;
+  }
+
+  .footer {
+    height: 127px;
   }
 </style>
