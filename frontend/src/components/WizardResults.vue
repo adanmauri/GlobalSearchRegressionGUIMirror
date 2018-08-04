@@ -89,18 +89,18 @@
             <md-table-cell v-if="gsregOptions.ttest"><b>t-test</b></md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
-          <md-table-row v-for="(expvar, index) in expvars" :key="index" v-if="bestResult[expvar+'_b']">
+          <md-table-row v-for="(expvar, index) in expvars" :key="index" v-if="avgResults[expvar+'_b']">
             <md-table-cell colspan="3"><b>{{ expvar }}</b></md-table-cell>
-            <md-table-cell>{{ bestResult[expvar+'_b'] }}</md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell>{{ avgResults[expvar+'_b'] }}</md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults[expvar+'_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults[expvar+'_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
           <md-table-row v-if="gsregOptions.intercept">
             <md-table-cell colspan="3"><b>_cons</b></md-table-cell>
             <md-table-cell>{{ bestResult['_cons_b'] }}</md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults['_cons_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults['_cons_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
           <md-table-row class="observations">
@@ -110,17 +110,17 @@
 
           <md-table-row >
             <md-table-cell colspan="3"><b>{{ $constants.CRITERIA['r2adj'] }}</b></md-table-cell>
-            <md-table-cell colspan="3">{{ bestResult['r2adj'] }}</md-table-cell>
+            <md-table-cell colspan="3">{{ avgResult['r2adj'] }}</md-table-cell>
           </md-table-row>
 
           <md-table-row >
             <md-table-cell colspan="3"><b>F-statistic</b></md-table-cell>
-            <md-table-cell colspan="3">{{ bestResult['F'] }}</md-table-cell>
+            <md-table-cell colspan="3">{{ avgResult['F'] }}</md-table-cell>
           </md-table-row>
 
           <md-table-row >
             <md-table-cell colspan="3"><b>Combined criteria</b></md-table-cell>
-            <md-table-cell colspan="3">{{ bestResult['order'] }}</md-table-cell>
+            <md-table-cell colspan="3">{{ avgResult['order'] }}</md-table-cell>
           </md-table-row>
         </md-table>
       </div>
@@ -143,7 +143,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['server', 'depvar', 'expvars', 'gsregOptions', 'paraprocs', 'exportcsv', 'bestResult'])
+    ...mapState(['server', 'depvar', 'expvars', 'gsregOptions', 'paraprocs', 'exportcsv', 'bestResult', 'avgResults'])
   },
   methods: {
     startOver () {
