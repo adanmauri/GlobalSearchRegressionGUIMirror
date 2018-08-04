@@ -29,12 +29,10 @@
     </footer>
     <div class="server-status-container container-fluid">
       <ul class="server-status">
-        <li><b>Server status:</b> <span v-if="server" class="online">Online</span><span v-else-if="server === false"
-                                                                                        class="offline">Offline</span><span
-          v-else class="offline">...</span></li>
-        <li v-if="server"><b>Julia version:</b> <span>{{ server.julia_version }}</span></li>
-        <li v-if="server"><b>GSReg version:</b> <span>{{ server.gsreg_ersion }}</span></li>
-        <li v-if="server"><b>Number of cores:</b> <span>{{ server.ncores }}</span></li>
+        <li><b>Server status:</b> <span v-if="server.ncores" class="online">Online</span><span v-else class="offline">Offline</span></li>
+        <li v-if="server.ncores"><b>Julia version:</b> <span>{{ server.juliaVersion }}</span></li>
+        <li v-if="server.ncores"><b>GSReg version:</b> <span>{{ server.gsregVersion }}</span></li>
+        <li v-if="server.ncores"><b>Number of cores:</b> <span>{{ server.ncores }}</span></li>
       </ul>
     </div>
   </div>
@@ -58,9 +56,11 @@
     methods: {},
     created () {
       this.$http.get(this.$constants.API.host + this.$constants.API.paths.server_info).then(response => {
-        this.$store.commit('setServer', response.body)
-      }).catch(() => {
-        this.$store.commit('setServer', false)
+        this.$store.commit('setServerNworkers', response.body.nworkers)
+        this.$store.commit('setServerNcores', response.body.ncores)
+        this.$store.commit('setServerJuliaVersion', response.body.julia_version)
+        this.$store.commit('setServerGsregVersion', response.body.gsreg_version)
+        this.$store.commit('setServerJobQueueLength', response.body.job_queue.length)
       })
     }
   }

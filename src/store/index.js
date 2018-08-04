@@ -15,7 +15,16 @@ const state = {
     datanames: [],
     nobs: null
   },
-  server: null,
+  server: {
+    nworkers: null,
+    ncores: null,
+    operationId: null,
+    juliaVersion: null,
+    gsregVersion: null,
+    jobQueue: {
+      length: null
+    }
+  },
   depvar: null,
   expvars: [],
   gsregOptions: {
@@ -126,7 +135,6 @@ const mutations = {
     }
     state.inputData.datanames = []
     state.inputData.nobs = null
-    state.server = state.server || {}
     state.server.nworkers = null
     state.server.operationId = null
     state.paraprocs = 1
@@ -152,8 +160,23 @@ const mutations = {
   setInputDataNobs (state, nobs) {
     state.inputData.nobs = nobs
   },
-  setServer (state, server) {
-    state.server = server
+  setServerNworkers (state, nworkers) {
+    state.server.nworkers = nworkers
+  },
+  setServerNcores (state, ncores) {
+    state.server.ncores = ncores
+  },
+  setServerJuliaVersion (state, juliaVersion) {
+    state.server.juliaVersion = juliaVersion
+  },
+  setServerGsregVersion (state, gsregVersion) {
+    state.server.gsregVersion = gsregVersion
+  },
+  setServerJobQueueLength (state, length) {
+    state.server.jobQueue.length = length
+  },
+  setServerOperationId (state, operationId) {
+    state.server.operationId = operationId
   },
   setGSRegOptionsDepvar (state, depvar) {
     state.depvar = depvar
