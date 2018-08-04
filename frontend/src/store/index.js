@@ -155,7 +155,7 @@ const mutations = {
     state.gsregOptions.csv = null
     state.gsregOptions.method = 'fast'
     state.gsregOptions.criteria = []
-    state.bestResult = null,
+    state.bestResult = null
     state.avgResults = null
   },
   setInputDataDatanames (state, datanames) {
