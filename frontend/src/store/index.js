@@ -41,7 +41,8 @@ const state = {
     method: 'fast',
     criteria: []
   },
-  bestResult: null
+  bestResult: null,
+  avgResults: null
 }
 const getters = {
   getInputDataDatanames (state) {
@@ -154,6 +155,8 @@ const mutations = {
     state.gsregOptions.csv = null
     state.gsregOptions.method = 'fast'
     state.gsregOptions.criteria = []
+    state.bestResult = null,
+    state.avgResults = null
   },
   setInputDataDatanames (state, datanames) {
     state.inputData.datanames = datanames
@@ -262,6 +265,9 @@ const mutations = {
   },
   setBestResult (state, bestResult) {
     state.bestResult = bestResult
+  },
+  setAvgResults (state, avgResults) {
+    state.avgResults = avgResults
   }
 }
 

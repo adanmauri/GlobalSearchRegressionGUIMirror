@@ -1,6 +1,6 @@
 export default {
   'API': {
-    'host': 'http://d5e7a0f4.ngrok.io',
+    'host': 'http://628fdabc.ngrok.io',
     'paths': {
       'server_info': '/server-info',
       'load_database': '/upload',
@@ -9,7 +9,7 @@ export default {
     }
   },
   'WS': {
-    'url': 'ws://d5e7a0f4.ngrok.io'
+    'url': 'ws://628fdabc.ngrok.io'
   },
   'INSAMPLE_MIN_SIZE': 20,
   'STEPS': [
