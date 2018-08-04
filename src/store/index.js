@@ -126,6 +126,7 @@ const mutations = {
     }
     state.inputData.datanames = []
     state.inputData.nobs = null
+    state.server = state.server || {}
     state.server.nworkers = null
     state.server.operationId = null
     state.paraprocs = 1
