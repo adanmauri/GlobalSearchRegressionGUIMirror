@@ -34,7 +34,7 @@
           <md-table-row v-for="(expvar, index) in expvars" :key="index" v-if="bestResult[expvar+'_b']">
             <md-table-cell colspan="3"><b>{{ expvar }}</b></md-table-cell>
             <md-table-cell>{{ bestResult[expvar+'_b'] }}</md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_bstd'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
             <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
