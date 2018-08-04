@@ -38,7 +38,7 @@ export default {
       outsample: 0,
       csv: null,
       method: 'fast',
-      addprocs: 0,
+      paraprocs: 1,
       criteria: []
     }
   }

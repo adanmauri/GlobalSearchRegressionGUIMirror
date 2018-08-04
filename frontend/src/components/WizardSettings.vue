@@ -115,13 +115,26 @@ export default {
     return {}
   },
   watch: {
-    criteria: function (depvar) {
+    criteria: function () {
+      this.validate()
+    },
+    exportcsv: function () {
+      this.validate()
+    },
+    csv: function () {
       this.validate()
     }
   },
   methods: {
     validate () {
-      this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: this.getGSRegOptionsCriteria.length > 0 })
+      var validCsv = true
+      console.log(this.exportcsv)
+      console.log(this.getGSRegOptionsCsv)
+      if (this.exportcsv && !this.getGSRegOptionsCsv) {
+        validCsv = false
+      }
+      var validLength = this.getGSRegOptionsCriteria.length > 0
+      this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: validCsv && validLength })
     },
     updateSetStep () {
       this.$store.commit('updateSetStep', { step: this.$store.state.currentStep, set: true })

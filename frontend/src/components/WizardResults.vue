@@ -9,7 +9,7 @@
     <nav class="results-menu">
       <ul>
         <li><md-button :class="activeTabClass(0)" @click.native="setActiveTab(0)">Best model results</md-button></li>
-        <li><md-button :class="activeTabClass(1)" @click.native="setActiveTab(1)">Model averaging results</md-button></li>
+        <li v-if="gsregOptions.modelavg"><md-button :class="activeTabClass(1)" @click.native="setActiveTab(1)">Model averaging results</md-button></li>
       </ul>
     </nav>
     <div class="results-tabs">
@@ -38,6 +38,7 @@
             <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
+
           <md-table-row v-if="gsregOptions.intercept">
             <md-table-cell colspan="3"><b>_cons</b></md-table-cell>
             <md-table-cell>{{ bestResult['_cons_b'] }}</md-table-cell>
@@ -65,13 +66,13 @@
             <md-table-cell colspan="3">{{ bestResult['order'] }}</md-table-cell>
           </md-table-row>
 
-          <md-table-row v-for="(criteria, index) in gsregOptions.criteria" :key="index" v-if="criteria!='r2adj'" >
+          <md-table-row v-for="(criteria) in gsregOptions.criteria" :key="criteria" v-if="criteria!='r2adj'" >
             <md-table-cell colspan="3"><b>{{ $constants.CRITERIA[criteria] }}</b></md-table-cell>
             <md-table-cell colspan="3">{{ bestResult[criteria] }}</md-table-cell>
           </md-table-row>
         </md-table>
       </div>
-      <div class="results-tab" v-if="activeTab === 1">
+      <div class="results-tab" v-if="activeTab === 1 && gsregOptions.modelavg">
         <md-table md-card>
           <md-table-toolbar>
             <h1 class="md-title">Model averaging results</h1>
@@ -110,22 +111,22 @@
 
           <md-table-row >
             <md-table-cell colspan="3"><b>{{ $constants.CRITERIA['r2adj'] }}</b></md-table-cell>
-            <md-table-cell colspan="3">{{ avgResult['r2adj'] }}</md-table-cell>
+            <md-table-cell colspan="3">{{ avgResults['r2adj'] }}</md-table-cell>
           </md-table-row>
 
           <md-table-row >
             <md-table-cell colspan="3"><b>F-statistic</b></md-table-cell>
-            <md-table-cell colspan="3">{{ avgResult['F'] }}</md-table-cell>
+            <md-table-cell colspan="3">{{ avgResults['F'] }}</md-table-cell>
           </md-table-row>
 
           <md-table-row >
             <md-table-cell colspan="3"><b>Combined criteria</b></md-table-cell>
-            <md-table-cell colspan="3">{{ avgResult['order'] }}</md-table-cell>
+            <md-table-cell colspan="3">{{ avgResults['order'] }}</md-table-cell>
           </md-table-row>
         </md-table>
       </div>
     </div>
-    <div class="text-right">
+    <div class="text-right mt-3">
       <md-button class="md-raised md-primary" @click.native="startOver()">Start over</md-button>
     </div>
   </div>
@@ -147,7 +148,8 @@ export default {
   },
   methods: {
     startOver () {
-      self.commit('setCurrentStep', 0)
+      this.$store.commit('restartOperation', 0)
+      this.$store.commit('setCurrentStep', 0)
     },
     activeTabClass (tab) {
       return {
