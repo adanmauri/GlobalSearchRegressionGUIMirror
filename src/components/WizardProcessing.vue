@@ -100,9 +100,6 @@
             this.$store.commit('setAvgResults', parsedMessage.result.avgresults)
             this.$store.commit('updateCompleteStep', {step: this.$store.state.currentStep, complete: true})
             this.nextStep()
-          } else {
-            this.processing = false
-            this.error = true
           }
         }
         this.messages.push(parsedMessage)
