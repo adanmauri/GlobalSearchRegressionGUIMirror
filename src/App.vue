@@ -26,7 +26,7 @@
         <p><b>Global Regression Search</b> is licensed under the <a href="https://github.com/ParallelGSReg/GSReg.jl/blob/master/LICENSE.md" target="_blank" rel="license noopener">MIT License</a>.</p>
       </div>
 
-    </footer>
+   </footer>
     <div class="server-status-container container-fluid">
       <ul class="server-status">
         <li><b>Server status:</b> <span v-if="server.ncores" class="online">Online</span><span v-else class="offline">Offline</span></li>
@@ -109,11 +109,9 @@
     position: relative;
     min-height: 100%;
   }
-
   .role-main {
     margin-bottom: 126px; /* Margin bottom by footer height */
   }
-
   .footer {
     position: absolute;
     bottom: 0;
@@ -127,7 +125,7 @@
 
   .server-status-container {
     padding: 0 5em;
-    line-height: 30px;
+    line-height: 30px; 
     background: #333;
     color: #ddd;
     position: fixed;
@@ -142,32 +140,32 @@
 
   .server-status {
     padding-left: 0;
-    margin-bottom: 0 !important;
+    margin-bottom: 0!important;
   }
 
   .server-status li {
     display: inline-block;
   }
 
-  .server-status li + li {
+  .server-status li+li {
     margin-left: 1rem;
   }
 
   .footer-links {
-    padding-left: 0;
-    margin-bottom: 1rem;
+      padding-left: 0;
+      margin-bottom: 1rem;
   }
 
   .footer a {
-    font-weight: bold !important;
-    color: #495057 !important;
+      font-weight: bold!important;
+      color: #495057!important;
   }
 
   .footer-links li {
     display: inline-block;
   }
 
-  .footer-links li + li {
+  .footer-links li+li {
     margin-left: 1rem;
   }
 
@@ -208,6 +206,14 @@
     height: 32px;
   }
 
+  .required-input {
+    margin-bottom: 0;
+  }
+
+  .required-label {
+    line-height: 24px;
+  }
+
   .bg-julia {
     background-color: #5b38da !important;
   }
@@ -224,9 +230,9 @@
   }
 
   @include media-breakpoint-up(sm) {
-    .footer {
-      text-align: left;
-    }
+      .footer {
+        text-align: left;
+      }
   }
 
   @include media-breakpoint-down(sm) {

@@ -3,21 +3,23 @@
     <h2>Select variables</h2>
     <div class="row">
       <div class="col">
-        <md-field>
+        <md-field class="required-input">
           <label for="dependent" title="Select dependent variables">Dependent variables</label>
           <md-select v-model="dependent" placeholder="Dependent variables" required>
             <md-option v-for="(dataname, index) in datanames" :key="index" :value="dataname">{{ dataname }}</md-option>
           </md-select>
         </md-field>
+        <span class="md-caption required-label">Required</span>
       </div>
       <div class="col">
         <div class="md-layout-item">
-          <md-field>
+          <md-field class="required-input">
             <label for="explanatory" title="Select explanatory variables">Explanatory variables</label>
             <md-select v-model="explanatory" placeholder="Explanatory variables" multiple required>
               <md-option v-for="(dataname, index) in datanames" :key="index" :value="dataname" :disabled="dependent==dataname">{{ dataname }}</md-option>
             </md-select>
           </md-field>
+          <span class="md-caption required-label">Required</span>
         </div>
       </div>
     </div>

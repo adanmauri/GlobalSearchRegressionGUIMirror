@@ -1,20 +1,15 @@
 <template>
   <div class="main">
     <h2>Results</h2>
-    <div v-if="gsregOptions.exportcsv" class="text-right"
-         :href="$constants.API.host + $constants.API.paths.results + server.operationId">
-      <md-button class="md-raised md-primary">
+    <div v-if="gsregOptions.exportcsv" class="text-right" :href="$constants.API.host + $constants.API.paths.results + server.operationId">
+      <md-button class="md-raised md-primary"> 
         Download CSV result
       </md-button>
     </div>
     <nav class="results-menu">
       <ul>
-        <li>
-          <md-button :class="activeTabClass(0)" @click.native="setActiveTab(0)">Best model results</md-button>
-        </li>
-        <li v-if="gsregOptions.modelavg">
-          <md-button :class="activeTabClass(1)" @click.native="setActiveTab(1)">Model averaging results</md-button>
-        </li>
+        <li><md-button :class="activeTabClass(0)" @click.native="setActiveTab(0)">Best model results</md-button></li>
+        <li v-if="gsregOptions.modelavg"><md-button :class="activeTabClass(1)" @click.native="setActiveTab(1)">Model averaging results</md-button></li>
       </ul>
     </nav>
     <div class="results-tabs">
@@ -26,36 +21,29 @@
 
           <md-table-row>
             <md-table-cell colspan="3"></md-table-cell>
-            <md-table-cell colspan="3" class="dependent-variable"><b>Dependent variable: </b>{{ depvar }}
-            </md-table-cell>
+            <md-table-cell colspan="3" class="dependent-variable"><b>Dependent variable: </b>{{ depvar }}</md-table-cell>
           </md-table-row>
 
           <md-table-row class="best-results-title">
             <md-table-cell colspan="3"><b>Selected covariates</b></md-table-cell>
             <md-table-cell><b>Coef.</b></md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest"><b>Std.</b></md-table-cell>
-            <md-table-cell v-else></md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest"><b>t-test</b></md-table-cell>
-            <md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest"><b>Std.</b></md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest"><b>t-test</b></md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
           <md-table-row v-for="(expvar, index) in expvars" :key="index" v-if="bestResult[expvar+'_b']">
             <md-table-cell colspan="3"><b>{{ expvar }}</b></md-table-cell>
             <md-table-cell>{{ bestResult[expvar+'_b'] }}</md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_std'] }}</md-table-cell>
-            <md-table-cell v-else></md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_t'] }}</md-table-cell>
-            <md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
 
           <md-table-row v-if="gsregOptions.intercept">
             <md-table-cell colspan="3"><b>_cons</b></md-table-cell>
             <md-table-cell>{{ bestResult['_cons_b'] }}</md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_std'] }}</md-table-cell>
-            <md-table-cell v-else></md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_t'] }}</md-table-cell>
-            <md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
           <md-table-row class="observations">
@@ -63,22 +51,22 @@
             <md-table-cell colspan="3">{{ bestResult['nobs'] }}</md-table-cell>
           </md-table-row>
 
-          <md-table-row>
+          <md-table-row >
             <md-table-cell colspan="3"><b>{{ $constants.CRITERIA['r2adj'] }}</b></md-table-cell>
             <md-table-cell colspan="3">{{ bestResult['r2adj'] }}</md-table-cell>
           </md-table-row>
 
-          <md-table-row>
+          <md-table-row >
             <md-table-cell colspan="3"><b>F-statistic</b></md-table-cell>
             <md-table-cell colspan="3">{{ bestResult['F'] }}</md-table-cell>
           </md-table-row>
 
-          <md-table-row>
+          <md-table-row >
             <md-table-cell colspan="3"><b>Combined criteria</b></md-table-cell>
             <md-table-cell colspan="3">{{ bestResult['order'] }}</md-table-cell>
           </md-table-row>
 
-          <md-table-row v-for="(criteria) in gsregOptions.criteria" :key="criteria" v-if="criteria!='r2adj'">
+          <md-table-row v-for="(criteria) in gsregOptions.criteria" :key="criteria" v-if="criteria!='r2adj'" >
             <md-table-cell colspan="3"><b>{{ $constants.CRITERIA[criteria] }}</b></md-table-cell>
             <md-table-cell colspan="3">{{ bestResult[criteria] }}</md-table-cell>
           </md-table-row>
@@ -92,35 +80,28 @@
 
           <md-table-row>
             <md-table-cell colspan="3"></md-table-cell>
-            <md-table-cell colspan="3" class="dependent-variable"><b>Dependent variable: </b>{{ depvar }}
-            </md-table-cell>
+            <md-table-cell colspan="3" class="dependent-variable"><b>Dependent variable: </b>{{ depvar }}</md-table-cell>
           </md-table-row>
 
           <md-table-row class="best-results-title">
             <md-table-cell colspan="3"><b>Selected covariates</b></md-table-cell>
             <md-table-cell><b>Coef.</b></md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest"><b>Std.</b></md-table-cell>
-            <md-table-cell v-else></md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest"><b>t-test</b></md-table-cell>
-            <md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest"><b>Std.</b></md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest"><b>t-test</b></md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
           <md-table-row v-for="(expvar, index) in expvars" :key="index" v-if="avgResults[expvar+'_b']">
             <md-table-cell colspan="3"><b>{{ expvar }}</b></md-table-cell>
             <md-table-cell>{{ avgResults[expvar+'_b'] }}</md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults[expvar+'_std'] }}</md-table-cell>
-            <md-table-cell v-else></md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults[expvar+'_t'] }}</md-table-cell>
-            <md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults[expvar+'_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults[expvar+'_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
           <md-table-row v-if="gsregOptions.intercept">
             <md-table-cell colspan="3"><b>_cons</b></md-table-cell>
             <md-table-cell>{{ bestResult['_cons_b'] }}</md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults['_cons_std'] }}</md-table-cell>
-            <md-table-cell v-else></md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults['_cons_t'] }}</md-table-cell>
-            <md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults['_cons_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults['_cons_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
           <md-table-row class="observations">
@@ -128,17 +109,17 @@
             <md-table-cell colspan="3">{{ bestResult['nobs'] }}</md-table-cell>
           </md-table-row>
 
-          <md-table-row>
+          <md-table-row >
             <md-table-cell colspan="3"><b>{{ $constants.CRITERIA['r2adj'] }}</b></md-table-cell>
             <md-table-cell colspan="3">{{ avgResults['r2adj'] }}</md-table-cell>
           </md-table-row>
 
-          <md-table-row>
+          <md-table-row >
             <md-table-cell colspan="3"><b>F-statistic</b></md-table-cell>
             <md-table-cell colspan="3">{{ avgResults['F'] }}</md-table-cell>
           </md-table-row>
 
-          <md-table-row>
+          <md-table-row >
             <md-table-cell colspan="3"><b>Combined criteria</b></md-table-cell>
             <md-table-cell colspan="3">{{ avgResults['order'] }}</md-table-cell>
           </md-table-row>
@@ -152,34 +133,34 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex'
+import {mapState} from 'vuex'
 
-  export default {
-    components: {},
-    name: 'Results',
-    data () {
+export default {
+  components: { },
+  name: 'Results',
+  data () {
+    return {
+      activeTab: 0
+    }
+  },
+  computed: {
+    ...mapState(['server', 'depvar', 'expvars', 'gsregOptions', 'paraprocs', 'exportcsv', 'bestResult', 'avgResults'])
+  },
+  methods: {
+    startOver () {
+      this.$store.commit('restartOperation', 0)
+      this.$store.commit('setCurrentStep', 0)
+    },
+    activeTabClass (tab) {
       return {
-        activeTab: 0
+        active: this.activeTab === tab
       }
     },
-    computed: {
-      ...mapState(['server', 'depvar', 'expvars', 'gsregOptions', 'paraprocs', 'exportcsv', 'bestResult', 'avgResults'])
-    },
-    methods: {
-      startOver () {
-        this.$store.commit('restartOperation', 0)
-        this.$store.commit('setCurrentStep', 0)
-      },
-      activeTabClass (tab) {
-        return {
-          active: this.activeTab === tab
-        }
-      },
-      setActiveTab (tab) {
-        this.activeTab = tab
-      }
+    setActiveTab (tab) {
+      this.activeTab = tab
     }
   }
+}
 </script>
 
 <style>
@@ -197,7 +178,7 @@
 
   .results-menu ul li button:hover {
     border-bottom: 1px solid #000;
-    background-color: #fff !important;
+    background-color: #fff!important;
   }
 
   .results-menu ul li button.active,
@@ -219,25 +200,25 @@
     border-top: 2px solid #999;
   }
 
-  h1 {
-    font-weight: normal;
-    font-family: "Lato Regular";
-    margin-bottom: 0;
-  }
+h1 {
+  font-weight: normal;
+  font-family: "Lato Regular";
+  margin-bottom: 0;
+}
 
-  p {
-    max-width: 800px;
-    margin: 10px auto;
-  }
+p {
+  max-width: 800px;
+  margin: 10px auto;
+}
 
-  a.start-button {
-    text-decoration: none;
-    color: #4D63D4;
-    font-size: 20px;
-    font-family: "Lato Black";
-  }
+a.start-button {
+  text-decoration: none;
+  color: #4D63D4;
+  font-size: 20px;
+  font-family: "Lato Black";
+}
 
-  .example-drag .drop-active {
+.example-drag .drop-active {
     top: 0;
     bottom: 0;
     right: 0;
@@ -248,7 +229,6 @@
     text-align: center;
     background: #000;
   }
-
   .example-drag .drop-active h3 {
     margin: -.5em 0 0;
     position: absolute;

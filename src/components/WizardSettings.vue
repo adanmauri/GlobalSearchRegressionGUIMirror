@@ -18,12 +18,13 @@
           </div>
           <div class="col">
             <div class="md-layout-item">
-              <md-field>
+              <md-field class="required-input">
                 <label for="criteria" title="Ordering criteria">Ordering criteria</label>
                 <md-select v-model="criteria" placeholder="Ordering criteria" multiple>
                   <md-option v-for="(criteria, index) in $constants.CRITERIA" :key="index" :value="index" :disabled="index==='rmseout' && parseInt(outsample)===0" >{{ criteria }}</md-option>
                 </md-select>
               </md-field>
+              <span class="md-caption required-label">Required</span>
             </div>
           </div>
         </div>
@@ -92,10 +93,11 @@
           </div>
           <div class="col">
             <div class="md-layout-item">
-              <md-field>
+              <md-field class="required-input">
                 <label for="csv" title="Define output CSV filename">Output filename</label>
                 <md-input v-model="csv" type="text" placeholder="Output filename" :disabled="!exportcsv" :hidden="!exportcsv"></md-input>
               </md-field>
+              <span class="md-caption required-label" :hidden="!exportcsv">Required</span>
             </div>
           </div>
         </div>

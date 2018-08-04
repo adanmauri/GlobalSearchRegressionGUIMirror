@@ -39,8 +39,8 @@
         <div class="col">
           <ul class="gsregOptions">
             <li><b>Sort all models: </b><span v-if="gsregOptions.orderresults">Yes</span><span v-else>No</span></li>
-            <li><b>Export to CSV: </b><span v-if="gsregOptions.exportcsv">Yes</span><span v-else>No</span></li>
-            <li v-if="gsregOptions.exportcsv"><b>Output filename: </b>{{ gsregOptions.csv }}</li>
+            <li><b>Export to CSV: </b><span v-if="exportcsv">Yes</span><span v-else>No</span></li>
+            <li v-if="exportcsv"><b>Output filename: </b>{{ gsregOptions.csv }}</li>
           </ul>
         </div>
       </div>
@@ -49,15 +49,23 @@
       </div>
     </div>
     <div v-else>
+      <p>Server console</p>
       <div class="websocket-console">
-        <div class="progress-spinner text-center">
+        <div class="progress-spinner text-center" :hidden="error">
           <md-progress-spinner :md-diameter="150" :md-stroke="10" class="spinner" md-mode="indeterminate"></md-progress-spinner>
+        </div>
+        <div class="progress-error text-center" :hidden="!error">
+            <font-awesome-icon icon="exclamation-triangle"/>
         </div>
         <transition name="slide-fade" mode="out-in">
           <div :key="lastMessage" class="progress-text text-center">
             {{ lastMessage }}
           </div>
         </transition>
+      </div>
+      <div class="text-center" :hidden="!error">
+        <md-button class="md-raised md-primary" @click.native="solve()">Start over</md-button>
+        <md-button class="md-raised md-accent" @click.native="solve()">Retry</md-button>
       </div>
     </div>
   </div>
@@ -73,7 +81,8 @@
       return {
         messages: [],
         lastMessage: null,
-        processing: false
+        processing: false,
+        error: false
       }
     },
     created () {
@@ -86,10 +95,10 @@
             this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: true })
             this.nextStep()
           } else {
-            alert('ERROR')
+            this.processing = false
+            this.error = true
           }
         }
-        console.log(parsedMessage)
         this.messages.push(parsedMessage)
         this.lastMessage = parsedMessage['message']
       }
@@ -100,6 +109,10 @@
       sendMessage (msg = {}) {
         msg['user-token'] = this.$store.state.userToken
         this.$socket.sendObj(msg)
+      },
+      startOver () {
+        this.$store.commit('restartOperation', 0)
+        this.$store.commit('setCurrentStep', 0)
       },
       solve () {
         this.$store.commit('setNavBlocked', true)
@@ -177,4 +190,10 @@
   .footer {
     height: 127px;
   }
+
+  .progress-error {
+    color: #cb3c33;
+    font-size: 95px;
+  }
+
 </style>

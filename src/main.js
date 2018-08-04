@@ -12,7 +12,7 @@ import VueResource from 'vue-resource'
 
 import BootstrapVue from 'bootstrap-vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faDatabase, faFlask, faCog, faSpinner, faClipboardList, faFile, faUpload, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faDatabase, faFlask, faCog, faSpinner, faClipboardList, faFile, faUpload, faChevronLeft, faChevronRight, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
@@ -22,7 +22,7 @@ Vue.config.productionTip = false
 Vue.prototype.$constants = constants
 Vue.use(VueNativeSock, constants.WS.url, { format: 'json' })
 
-library.add(faDatabase, faFlask, faCog, faSpinner, faClipboardList, faFile, faUpload, faChevronLeft, faChevronRight)
+library.add(faDatabase, faFlask, faCog, faSpinner, faClipboardList, faFile, faUpload, faChevronLeft, faChevronRight, faExclamationTriangle)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.use(VueResource)
