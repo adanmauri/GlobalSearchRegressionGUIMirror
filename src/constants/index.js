@@ -5,7 +5,7 @@ export default {
       'server_info': '/server-info',
       'load_database': '/upload',
       'solve_file_options': '/solve',
-      'results': '/results'
+      'results': '/result'
     }
   },
   'WS': {

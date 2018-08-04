@@ -38,7 +38,6 @@
             <md-table-cell v-if="gsregOptions.ttest">{{ bestResult[expvar+'_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
-
           <md-table-row v-if="gsregOptions.intercept">
             <md-table-cell colspan="3"><b>_cons</b></md-table-cell>
             <md-table-cell>{{ bestResult['_cons_b'] }}</md-table-cell>
