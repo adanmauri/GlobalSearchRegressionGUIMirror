@@ -130,8 +130,6 @@ export default {
   methods: {
     validate () {
       var validCsv = true
-      console.log(this.exportcsv)
-      console.log(this.getGSRegOptionsCsv)
       if (this.exportcsv && !this.getGSRegOptionsCsv) {
         validCsv = false
       }

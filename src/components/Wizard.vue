@@ -119,7 +119,7 @@
 </script>
 
 <style lang="scss">
- 
+
   .wizard .step-progress {
     margin-top: 50px;
     height: 7px;
@@ -262,5 +262,5 @@
   .nav-next-button:hover + .nav-next-label {
     opacity: 100;
   }
-  
+
 </style>
