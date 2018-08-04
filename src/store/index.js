@@ -15,16 +15,7 @@ const state = {
     datanames: [],
     nobs: null
   },
-  server: {
-    nworkers: null,
-    ncores: null,
-    operationId: null,
-    juliaVersion: null,
-    gsregVersion: null,
-    jobQueue: {
-      length: null
-    }
-  },
+  server: null,
   depvar: null,
   expvars: [],
   gsregOptions: {
@@ -160,23 +151,8 @@ const mutations = {
   setInputDataNobs (state, nobs) {
     state.inputData.nobs = nobs
   },
-  setServerNworkers (state, nworkers) {
-    state.server.nworkers = nworkers
-  },
-  setServerNcores (state, ncores) {
-    state.server.ncores = ncores
-  },
-  setServerJuliaVersion (state, juliaVersion) {
-    state.server.juliaVersion = juliaVersion
-  },
-  setServerGsregVersion (state, gsregVersion) {
-    state.server.gsregVersion = gsregVersion
-  },
-  setServerJobQueueLength (state, length) {
-    state.server.jobQueue.length = length
-  },
-  setServerOperationId (state, operationId) {
-    state.server.operationId = operationId
+  setServer (state, server) {
+    state.server = server
   },
   setGSRegOptionsDepvar (state, depvar) {
     state.depvar = depvar

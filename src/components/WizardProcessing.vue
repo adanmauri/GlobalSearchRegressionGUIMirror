@@ -49,7 +49,6 @@
       </div>
     </div>
     <div v-else>
-      <p>Server console</p>
       <div class="websocket-console">
         <div class="progress-spinner text-center">
           <md-progress-spinner :md-diameter="150" :md-stroke="10" class="spinner" md-mode="indeterminate"></md-progress-spinner>

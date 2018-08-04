@@ -26,13 +26,15 @@
         <p><b>Global Regression Search</b> is licensed under the <a href="https://github.com/ParallelGSReg/GSReg.jl/blob/master/LICENSE.md" target="_blank" rel="license noopener">MIT License</a>.</p>
       </div>
 
-   </footer>
+    </footer>
     <div class="server-status-container container-fluid">
       <ul class="server-status">
-        <li><b>Server status:</b> <span v-if="server.ncores" class="online">Online</span><span v-else class="offline">Offline</span></li>
-        <li v-if="server.ncores"><b>Julia version:</b> <span>{{ server.juliaVersion }}</span></li>
-        <li v-if="server.ncores"><b>GSReg version:</b> <span>{{ server.gsregVersion }}</span></li>
-        <li v-if="server.ncores"><b>Number of cores:</b> <span>{{ server.ncores }}</span></li>
+        <li><b>Server status:</b> <span v-if="server" class="online">Online</span><span v-else-if="server === false"
+                                                                                        class="offline">Offline</span><span
+          v-else class="offline">...</span></li>
+        <li v-if="server"><b>Julia version:</b> <span>{{ server.julia_version }}</span></li>
+        <li v-if="server"><b>GSReg version:</b> <span>{{ server.gsreg_ersion }}</span></li>
+        <li v-if="server"><b>Number of cores:</b> <span>{{ server.ncores }}</span></li>
       </ul>
     </div>
   </div>
@@ -56,11 +58,9 @@
     methods: {},
     created () {
       this.$http.get(this.$constants.API.host + this.$constants.API.paths.server_info).then(response => {
-        this.$store.commit('setServerNworkers', response.body.nworkers)
-        this.$store.commit('setServerNcores', response.body.ncores)
-        this.$store.commit('setServerJuliaVersion', response.body.julia_version)
-        this.$store.commit('setServerGsregVersion', response.body.gsreg_version)
-        this.$store.commit('setServerJobQueueLength', response.body.job_queue.length)
+        this.$store.commit('setServer', response.body)
+      }).catch(() => {
+        this.$store.commit('setServer', false)
       })
     }
   }
@@ -109,9 +109,11 @@
     position: relative;
     min-height: 100%;
   }
+
   .role-main {
     margin-bottom: 126px; /* Margin bottom by footer height */
   }
+
   .footer {
     position: absolute;
     bottom: 0;
@@ -125,7 +127,7 @@
 
   .server-status-container {
     padding: 0 5em;
-    line-height: 30px; 
+    line-height: 30px;
     background: #333;
     color: #ddd;
     position: fixed;
@@ -140,32 +142,32 @@
 
   .server-status {
     padding-left: 0;
-    margin-bottom: 0!important;
+    margin-bottom: 0 !important;
   }
 
   .server-status li {
     display: inline-block;
   }
 
-  .server-status li+li {
+  .server-status li + li {
     margin-left: 1rem;
   }
 
   .footer-links {
-      padding-left: 0;
-      margin-bottom: 1rem;
+    padding-left: 0;
+    margin-bottom: 1rem;
   }
 
   .footer a {
-      font-weight: bold!important;
-      color: #495057!important;
+    font-weight: bold !important;
+    color: #495057 !important;
   }
 
   .footer-links li {
     display: inline-block;
   }
 
-  .footer-links li+li {
+  .footer-links li + li {
     margin-left: 1rem;
   }
 
@@ -222,9 +224,9 @@
   }
 
   @include media-breakpoint-up(sm) {
-      .footer {
-        text-align: left;
-      }
+    .footer {
+      text-align: left;
+    }
   }
 
   @include media-breakpoint-down(sm) {
