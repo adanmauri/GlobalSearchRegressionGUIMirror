@@ -23,7 +23,7 @@
           <li><a href="https://github.com/ParallelGSReg/GSReg.jl">GitHub</a></li>
           <li><a href="https://julialang.org/">Julia</a></li>
         </ul>
-        <p><b>Global Regression Search GUI</b> is licensed under the <a href="https://github.com/ParallelGSReg/GSReg.jl/blob/master/LICENSE.md" target="_blank" rel="license noopener">MIT License</a>.</p>
+        <p><b>Global Regression Search</b> is licensed under the <a href="https://github.com/ParallelGSReg/GSReg.jl/blob/master/LICENSE.md" target="_blank" rel="license noopener">MIT License</a>.</p>
       </div>
 
    </footer>

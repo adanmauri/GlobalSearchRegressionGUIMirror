@@ -83,7 +83,7 @@
         if (parsedMessage.hasOwnProperty('done')) {
           if (parsedMessage.done === true) {
             this.$store.commit('setBestResult', parsedMessage.result.bestresult)
-            this.$store.commit('setBestResult', parsedMessage.result.avgresults)
+            this.$store.commit('setAvgResults', parsedMessage.result.avgresults)
             this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: true })
             this.nextStep()
           } else {
@@ -109,7 +109,7 @@
         var request = {
           'depvar': this.$store.state.depvar,
           'expvars': this.$store.state.expvars,
-          'addprocs': this.$store.state.addprocs,
+          'paraprocs': this.$store.state.paraprocs,
           'options': this.$store.state.gsregOptions
         }
         var requestUrl = this.$constants.API.host + this.$constants.API.paths.solve_file_options + '/' + this.$store.state.server.operationId + '/' + btoa(JSON.stringify(request))

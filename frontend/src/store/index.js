@@ -27,7 +27,6 @@ const state = {
   },
   depvar: null,
   expvars: [],
-  addprocs: 0,
   gsregOptions: {
     intercept: null,
     time: null,
@@ -96,9 +95,6 @@ const getters = {
   getGSRegOptionsMethod (state) {
     return state.gsregOptions.method
   },
-  getGSRegOptionsAddprocs (state) {
-    return state.addprocs
-  },
   getGSRegOptionsCriteria (state) {
     return state.gsregOptions.criteria
   }
@@ -141,9 +137,9 @@ const mutations = {
     state.inputData.nobs = null
     state.server.nworkers = null
     state.server.operationId = null
+    state.paraprocs = 1
     state.depvar = null
     state.expvars = []
-    state.addprocs = 0
     state.gsregOptions.intercept = false
     state.gsregOptions.time = null
     state.gsregOptions.residualtest = null
@@ -151,11 +147,11 @@ const mutations = {
     state.gsregOptions.ttest = null
     state.gsregOptions.orderresults = null
     state.gsregOptions.modelavg = null
-    state.gsregOptions.outsample = 0
+    state.gsregOptions.outsample = '0'
     state.gsregOptions.csv = null
     state.gsregOptions.method = 'fast'
     state.gsregOptions.criteria = []
-    state.bestResult = null,
+    state.bestResult = null
     state.avgResults = null
   },
   setInputDataDatanames (state, datanames) {
@@ -210,16 +206,13 @@ const mutations = {
     state.gsregOptions.modelavg = modelavg
   },
   setGSRegOptionsOutsample (state, outsample) {
-    state.gsregOptions.outsample = outsample
+    state.gsregOptions.outsample = parseInt(outsample)
   },
   setGSRegOptionsCsv (state, csv) {
     state.gsregOptions.csv = csv
   },
   setGSRegOptionsMethod (state, method) {
     state.gsregOptions.method = method
-  },
-  setGSRegOptionsAddprocs (state, addprocs) {
-    state.addprocs = addprocs
   },
   setGSRegOptionsCriteria (state, criteria) {
     state.gsregOptions.criteria = criteria
@@ -257,8 +250,7 @@ const mutations = {
     state.currentStep = currentStep
   },
   setParaprocs (state, paraprocs) {
-    state.paraprocs = paraprocs
-    state.addprocs = paraprocs - 1
+    state.paraprocs = parseInt(paraprocs)
   },
   setExportcsv (state, exportcsv) {
     state.exportcsv = exportcsv
