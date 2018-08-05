@@ -1,6 +1,6 @@
 export default {
   'API': {
-    'host': 'http://c038f6f4.ngrok.io',
+    'host': 'http://localhost:45872',
     'paths': {
       'server_info': '/server-info',
       'load_database': '/upload',
@@ -9,7 +9,7 @@ export default {
     }
   },
   'WS': {
-    'url': 'ws://c038f6f4.ngrok.io'
+    'url': 'ws://localhost:45872'
   },
   'INSAMPLE_MIN_SIZE': 20,
   'STEPS': [

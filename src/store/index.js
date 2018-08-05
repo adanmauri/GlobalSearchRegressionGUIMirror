@@ -19,6 +19,7 @@ const state = {
     nworkers: null,
     ncores: null,
     operationId: null,
+    resultId: null,
     juliaVersion: null,
     gsregVersion: null,
     jobQueue: {
@@ -27,6 +28,7 @@ const state = {
   },
   depvar: null,
   expvars: [],
+  csv: null,
   gsregOptions: {
     intercept: null,
     time: null,
@@ -36,7 +38,6 @@ const state = {
     orderresults: null,
     modelavg: null,
     outsample: 0,
-    csv: null,
     method: 'fast',
     criteria: []
   },
@@ -58,6 +59,9 @@ const getters = {
   },
   getServerOperationId (state) {
     return state.server.operationId
+  },
+  getServerResultId (state) {
+    return state.server.resultId
   },
   getGSRegOptionsDepvar (state) {
     return state.depvar
@@ -90,7 +94,7 @@ const getters = {
     return state.gsregOptions.outsample
   },
   getGSRegOptionsCsv (state) {
-    return state.gsregOptions.csv
+    return state.csv
   },
   getGSRegOptionsMethod (state) {
     return state.gsregOptions.method
@@ -148,7 +152,7 @@ const mutations = {
     state.gsregOptions.orderresults = null
     state.gsregOptions.modelavg = null
     state.gsregOptions.outsample = 0
-    state.gsregOptions.csv = null
+    state.csv = null
     state.gsregOptions.method = 'fast'
     state.gsregOptions.criteria = []
     state.bestResult = null
@@ -178,11 +182,17 @@ const mutations = {
   setServerOperationId (state, operationId) {
     state.server.operationId = operationId
   },
+  setServerResultId (state, resultId) {
+    state.server.resultId = resultId
+  },
   setGSRegOptionsDepvar (state, depvar) {
     state.depvar = depvar
   },
   setGSRegOptionsExpvars (state, expvars) {
     state.expvars = expvars
+  },
+  setGSRegOptionsCsv (state, csv) {
+    state.csv = csv
   },
   setGSRegOptionsIntercept (state, intercept) {
     state.gsregOptions.intercept = intercept
@@ -207,9 +217,6 @@ const mutations = {
   },
   setGSRegOptionsOutsample (state, outsample) {
     state.gsregOptions.outsample = parseInt(outsample)
-  },
-  setGSRegOptionsCsv (state, csv) {
-    state.gsregOptions.csv = csv
   },
   setGSRegOptionsMethod (state, method) {
     state.gsregOptions.method = method

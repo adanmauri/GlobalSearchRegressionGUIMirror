@@ -46,7 +46,7 @@
           <ul class="gsregOptions">
             <li><b>Sort all models: </b><span v-if="gsregOptions.orderresults">Yes</span><span v-else>No</span></li>
             <li><b>Export to CSV: </b><span v-if="exportcsv">Yes</span><span v-else>No</span></li>
-            <li v-if="exportcsv"><b>Output filename: </b>{{ gsregOptions.csv }}</li>
+            <li v-if="exportcsv"><b>Output filename: </b>{{ csv }}</li>
           </ul>
         </div>
       </div>
@@ -125,15 +125,17 @@
           'depvar': this.$store.state.depvar,
           'expvars': this.$store.state.expvars,
           'paraprocs': this.$store.state.paraprocs,
+          'csv': this.$store.state.csv,
           'options': this.$store.state.gsregOptions
         }
         var requestUrl = this.$constants.API.host + this.$constants.API.paths.solve_file_options + '/' + this.$store.state.server.operationId + '/' + btoa(JSON.stringify(request))
         this.$http.get(requestUrl).then(response => {
+          this.$store.commit('setServerResultId', response.body.operation_id)
         })
       }
     },
     computed: {
-      ...mapState(['depvar', 'expvars', 'gsregOptions', 'paraprocs', 'exportcsv'])
+      ...mapState(['depvar', 'expvars', 'gsregOptions', 'paraprocs', 'exportcsv', 'csv'])
     }
   }
 </script>

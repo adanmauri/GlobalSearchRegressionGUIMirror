@@ -54,7 +54,7 @@
             <div class="md-layout-item">
               <md-field>
                 <label for="paraprocs" title="Number of parallel workers">Number of parallel workers</label>
-                <md-input v-model="paraprocs" type="number" min="1" :max="ncores" placeholder="Number of parallel workers"></md-input>
+                <md-input v-model="paraprocs" type="number" min="1" :max="nworkers" placeholder="Number of parallel workers"></md-input>
               </md-field>
             </div>
           </div>
@@ -142,7 +142,7 @@ export default {
   },
   computed: {
     ...mapState(['datanames']),
-    ...mapGetters(['getInputDataNobs', 'getServerNcores', 'getGSRegOptionsExpvars', 'getGSRegOptionsIntercept', 'getGSRegOptionsResidualtest', 'getGSRegOptionsResidualtest', 'getGSRegOptionsKeepwnoise', 'getGSRegOptionsTtest', 'getGSRegOptionsOrderresults', 'getGSRegOptionsModelavg', 'getGSRegOptionsOutsample', 'getGSRegOptionsCsv', 'getGSRegOptionsMethod', 'getGSRegOptionsCriteria']),
+    ...mapGetters(['getInputDataNobs', 'getServerNworkers', 'getGSRegOptionsExpvars', 'getGSRegOptionsIntercept', 'getGSRegOptionsResidualtest', 'getGSRegOptionsResidualtest', 'getGSRegOptionsKeepwnoise', 'getGSRegOptionsTtest', 'getGSRegOptionsOrderresults', 'getGSRegOptionsModelavg', 'getGSRegOptionsOutsample', 'getGSRegOptionsCsv', 'getGSRegOptionsMethod', 'getGSRegOptionsCriteria']),
     outsampleMax () {
       return utils.outsampleMax(this.getInputDataNobs, this.$constants.INSAMPLE_MIN_SIZE, this.getGSRegOptionsExpvars, this.getGSRegOptionsIntercept)
     },
@@ -151,9 +151,9 @@ export default {
         return this.$store.state.navHidden
       }
     },
-    ncores: {
+    nworkers: {
       get () {
-        return this.getServerNcores
+        return this.getServerNworkers
       }
     },
     residualtest: {

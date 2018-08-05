@@ -2,7 +2,7 @@
   <div class="main">
     <h2>Results</h2>
     <div class="text-right" v-if="exportcsv">
-      <md-button class="md-raised md-primary" :href="$constants.API.host + $constants.API.paths.results + '/' + server.operationId"> 
+      <md-button class="md-raised md-primary" :href="$constants.API.host + $constants.API.paths.results + '/' + server.resultId">
         Download CSV result
       </md-button>
     </div>
@@ -143,7 +143,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['server', 'depvar', 'expvars', 'gsregOptions', 'paraprocs', 'exportcsv', 'bestResult', 'avgResults', 'exportcsv'])
+    ...mapState(['server', 'depvar', 'expvars', 'gsregOptions', 'paraprocs', 'exportcsv', 'bestResult', 'avgResults'])
   },
   methods: {
     startOver () {

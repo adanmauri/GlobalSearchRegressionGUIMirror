@@ -32,7 +32,7 @@
         <li><b>Server status:</b> <span v-if="server.ncores" class="online">Online</span><span v-else class="offline">Offline</span></li>
         <li v-if="server.ncores"><b>Julia version:</b> <span>{{ server.juliaVersion }}</span></li>
         <li v-if="server.ncores"><b>GSReg version:</b> <span>{{ server.gsregVersion }}</span></li>
-        <li v-if="server.ncores"><b>Number of cores:</b> <span>{{ server.ncores }}</span></li>
+        <li v-if="server.ncores"><b>Available workers:</b> <span>{{ server.nworkers }}</span></li>
       </ul>
     </div>
   </div>
@@ -125,7 +125,7 @@
 
   .server-status-container {
     padding: 0 5em;
-    line-height: 30px; 
+    line-height: 30px;
     background: #333;
     color: #ddd;
     position: fixed;
