@@ -1,23 +1,20 @@
 <template>
   <div class="main">
-    <h2>Results</h2>
-    <div class="text-right" v-if="exportcsv">
+    <div class="text-right">
       <md-button class="md-raised md-primary" :href="$constants.API.host + $constants.API.paths.results + '/' + server.resultId">
-        Download CSV result
+        <font-awesome-icon icon="download" />
+        Download CSV
       </md-button>
     </div>
     <nav class="results-menu">
       <ul>
-        <li><md-button :class="activeTabClass(0)" @click.native="setActiveTab(0)">Best model results</md-button></li>
-        <li v-if="gsregOptions.modelavg"><md-button :class="activeTabClass(1)" @click.native="setActiveTab(1)">Model averaging results</md-button></li>
+        <li><md-button :class="activeTabClass(0)" @click.native="setActiveTab(0)">Best model</md-button></li>
+        <li v-if="gsregOptions.modelavg"><md-button :class="activeTabClass(1)" @click.native="setActiveTab(1)">Model averaging</md-button></li>
       </ul>
     </nav>
     <div class="results-tabs">
       <div class="results-tab" v-if="activeTab === 0">
         <md-table md-card>
-          <md-table-toolbar>
-            <h1 class="md-title">Best model results</h1>
-          </md-table-toolbar>
 
           <md-table-row>
             <md-table-cell colspan="3"></md-table-cell>
@@ -41,7 +38,7 @@
           <md-table-row v-if="gsregOptions.intercept">
             <md-table-cell colspan="3"><b>_cons</b></md-table-cell>
             <md-table-cell>{{ bestResult['_cons_b'] }}</md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_bstd'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
             <md-table-cell v-if="gsregOptions.ttest">{{ bestResult['_cons_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
@@ -73,10 +70,6 @@
       </div>
       <div class="results-tab" v-if="activeTab === 1 && gsregOptions.modelavg">
         <md-table md-card>
-          <md-table-toolbar>
-            <h1 class="md-title">Model averaging results</h1>
-          </md-table-toolbar>
-
           <md-table-row>
             <md-table-cell colspan="3"></md-table-cell>
             <md-table-cell colspan="3" class="dependent-variable"><b>Dependent variable: </b>{{ depvar }}</md-table-cell>
@@ -92,14 +85,14 @@
           <md-table-row v-for="(expvar, index) in expvars" :key="index" v-if="avgResults[expvar+'_b']">
             <md-table-cell colspan="3"><b>{{ expvar }}</b></md-table-cell>
             <md-table-cell>{{ avgResults[expvar+'_b'] }}</md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults[expvar+'_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults[expvar+'_bstd'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
             <md-table-cell v-if="gsregOptions.ttest">{{ avgResults[expvar+'_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 
           <md-table-row v-if="gsregOptions.intercept">
             <md-table-cell colspan="3"><b>_cons</b></md-table-cell>
             <md-table-cell>{{ bestResult['_cons_b'] }}</md-table-cell>
-            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults['_cons_std'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
+            <md-table-cell v-if="gsregOptions.ttest">{{ avgResults['_cons_bstd'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
             <md-table-cell v-if="gsregOptions.ttest">{{ avgResults['_cons_t'] }}</md-table-cell><md-table-cell v-else></md-table-cell>
           </md-table-row>
 

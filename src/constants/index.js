@@ -8,6 +8,7 @@ export default {
       'results': '/result'
     }
   },
+  'VERSION': '0.1.0',
   'WS': {
     'url': 'ws://localhost:45872'
   },

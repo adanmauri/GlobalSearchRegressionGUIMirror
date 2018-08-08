@@ -139,11 +139,12 @@ const mutations = {
     }
     state.inputData.datanames = []
     state.inputData.nobs = null
-    state.server.nworkers = null
     state.server.operationId = null
     state.paraprocs = 1
+    state.exportcsv = false
     state.depvar = null
     state.expvars = []
+    // TODO: reset csv checkbox
     state.gsregOptions.intercept = false
     state.gsregOptions.time = null
     state.gsregOptions.residualtest = null

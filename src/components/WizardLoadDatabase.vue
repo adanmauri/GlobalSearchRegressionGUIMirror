@@ -24,7 +24,11 @@
     </div>
 
     <div v-for="(file, index) in files" :key="index">
-      <span><font-awesome-icon icon="file" class="file-icon"/></span> <span>{{ file.name }}</span>
+      <span><font-awesome-icon icon="file" class="file-icon"/></span>
+      <span>{{ file.name }}</span>
+
+      <a href="#" class="float-right" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.remove(file)">Remove</a>
+
       <div class="progress file-upload-progress">
         <div class="progress-bar file-upload-progress-bar" role="progressbar"
              :style="{ width: file.progress+'%' }" :aria-valuenow="file.progress" aria-valuemin="0"
@@ -34,9 +38,11 @@
     </div>
 
     <div class="upload-button-container text-right" v-if="files.length">
-      <md-button class="md-raised md-primary upload-file" v-show="!$refs.upload || !$refs.upload.active"
+      <md-button class="md-raised md-primary upload-file" v-if="!$refs.upload || !$refs.upload.active"
                  @click.prevent="$refs.upload.active = true">Start upload
       </md-button>
+      <md-button class="md-raised md-default cancel-upload" v-else
+                             @click.prevent="$refs.upload.clear()">Cancel</md-button>
     </div>
   </div>
 </template>
@@ -154,7 +160,7 @@
     color: #999;
   }
 
-  button.upload-file {
+  .upload-file, .cancel-upload {
     margin: 10px 0 0 0;
   }
 

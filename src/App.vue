@@ -23,7 +23,7 @@
           <li><a href="https://github.com/ParallelGSReg/GSReg.jl">GitHub</a></li>
           <li><a href="https://julialang.org/">Julia</a></li>
         </ul>
-        <p><b>Global Regression Search</b> is licensed under the <a href="https://github.com/ParallelGSReg/GSReg.jl/blob/master/LICENSE.md" target="_blank" rel="license noopener">MIT License</a>.</p>
+        <p><b>Global Search Regression</b> is licensed under the <a href="https://github.com/ParallelGSReg/GSReg.jl/blob/master/LICENSE.md" target="_blank" rel="license noopener">MIT License</a>.</p>
       </div>
 
    </footer>
@@ -32,6 +32,7 @@
         <li><b>Server status:</b> <span v-if="server.ncores" class="online">Online</span><span v-else class="offline">Offline</span></li>
         <li v-if="server.ncores"><b>Julia version:</b> <span>{{ server.juliaVersion }}</span></li>
         <li v-if="server.ncores"><b>GSReg version:</b> <span>{{ server.gsregVersion }}</span></li>
+        <li v-if="server.ncores"><b>GUI version:</b> <span>{{ $constants.VERSION }}</span></li>
         <li v-if="server.ncores"><b>Available workers:</b> <span>{{ server.nworkers }}</span></li>
       </ul>
     </div>
