@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- TODO: CHANGE NAME TO CONSTANT -->
     <title>Global Search Regression</title>
     <meta name="description" content="Global Search Regression (GSReg) is an automatic model selection command for time series, cross-section and panel data regressions">
     <meta name="author" content="Demian Panigo, Valentín Mari and Adán Mauri Ungaro">
@@ -12,7 +11,6 @@
     <link rel="icon" type="image/png" sizes="32x32" href="<%= htmlWebpackPlugin.files.publicPath %>static/img/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="<%= htmlWebpackPlugin.files.publicPath %>static/img/icons/favicon-16x16.png">
     <!--[if IE]><link rel="shortcut icon" href="/static/img/icons/favicon.ico"><![endif]-->
-    <!-- Add to home screen for Android and modern mobile browsers -->
     <link rel="manifest" href="<%= htmlWebpackPlugin.files.publicPath %>static/manifest.json">
     <meta name="theme-color" content="#B33232">
 
@@ -31,13 +29,6 @@
     <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="<%= htmlWebpackPlugin.files.publicPath + file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>
   </head>
   <body>
-    <noscript>
-      This is your fallback content in case JavaScript fails to load.
-    </noscript>
     <div id="app"></div>
-
-    <!-- Todo: only include in production -->
-    <%= htmlWebpackPlugin.options.serviceWorkerLoader %>
-    <!-- built files will be auto injected -->
   </body>
 </html>
