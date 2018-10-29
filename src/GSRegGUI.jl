@@ -361,7 +361,7 @@ connections = Dict{String,WebSocket}()
 
 noop(app, req) = app(req)
 
-function gui(;port=45872, cloud=false, log=false)
+function gui(;openbrowser=true, port=45872, cloud=false, log=false)
     global job_queue_cond
     global job_queue
 
@@ -398,6 +398,13 @@ function gui(;port=45872, cloud=false, log=false)
     end
 
     serve(server, port = port, host = ip"127.0.0.1" )
+
+    if(openbrowser)
+        url = "http://127.0.0.1:" * string(port);
+        start = (is_apple() ? "open" : is_windows() ? "start": "xdg-open");
+        sleep(3)
+        run(Cmd([start,url]));
+    end
 end
 
 export gui
