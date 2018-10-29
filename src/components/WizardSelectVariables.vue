@@ -19,6 +19,9 @@
               <md-option v-for="(dataname, index) in datanames" :key="index" :value="dataname" :disabled="dependent==dataname">{{ dataname }}</md-option>
             </md-select>
           </md-field>
+          <span class="md-caption required-label fa-pull-right">
+            <a href="#" @click="selectAll">Select all</a>
+          </span>
           <span class="md-caption required-label">Required</span>
         </div>
       </div>
@@ -68,6 +71,9 @@ export default {
   methods: {
     validate () {
       this.$store.commit('updateCompleteStep', { step: this.$store.state.currentStep, complete: this.getGSRegOptionsDepvar !== null && this.getGSRegOptionsExpvars.length > 1 })
+    },
+    selectAll () {
+      this.$store.commit('selectAllExplanatory')
     },
     updateOutsample () {
       var outsampleMax = utils.outsampleMax(this.getInputDataNobs, this.$constants.INSAMPLE_MIN_SIZE, this.getGSRegOptionsExpvars, this.getGSRegOptionsIntercept)

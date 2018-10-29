@@ -123,6 +123,9 @@ const actions = {
   updateCompleteStep ({commit, payload}) {
     commit('updateCompleteStep', payload)
   },
+  selectAllExplanatory ({commit}) {
+    commit('selectAllExplanatory')
+  },
   updateSetStep ({commit, payload}) {
     commit('updateSetStep', payload)
   }
@@ -161,6 +164,9 @@ const mutations = {
   },
   setInputDataDatanames (state, datanames) {
     state.inputData.datanames = datanames
+  },
+  selectAllExplanatory (state) {
+    state.expvars = state.inputData.datanames.filter(value => value !== state.depvar)
   },
   setInputDataNobs (state, nobs) {
     state.inputData.nobs = nobs
