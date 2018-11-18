@@ -1,6 +1,6 @@
 # global-search-regression
 
-> GSReg is an automatic model selection command for time series, cross-section and panel data regressions. 
+> GlobalSearchRegression is an automatic model selection command for time series, cross-section and panel data regressions. 
 
 ## Build Setup
 

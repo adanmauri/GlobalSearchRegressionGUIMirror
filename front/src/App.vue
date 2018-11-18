@@ -2,7 +2,7 @@
   <div id="app">
     <main role="main" class="role-main">
       <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-        <span class="navbar-brand"><img id="gsreg-logotype" src="@/assets/img/gsreg_icon.svg" alt="GSReg"/></span>
+        <span class="navbar-brand"><img id="gsreg-logotype" src="@/assets/img/gsreg_icon.svg" alt="Global Search Regression"/></span>
         <span class="navbar-brand"><h1>Global Search Regression</h1></span>
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <ul class="navbar-nav mr-auto">
@@ -19,11 +19,11 @@
 
       <div class="footer-links-container container-fluid">
         <ul class="footer-links">
-          <li><a href="https://parallelgsreg.github.io/GSReg.jl/">About</a></li>
-          <li><a href="https://github.com/ParallelGSReg/GSReg.jl">GitHub</a></li>
+          <li><a href="https://parallelgsreg.github.io/GlobalSearchRegression.jl/">About</a></li>
+          <li><a href="https://github.com/ParallelGSReg/GlobalSearchRegression.jl">GitHub</a></li>
           <li><a href="https://julialang.org/">Julia</a></li>
         </ul>
-        <p><b>Global Search Regression</b> is licensed under the <a href="https://github.com/ParallelGSReg/GSReg.jl/blob/master/LICENSE.md" target="_blank" rel="license noopener">MIT License</a>.</p>
+        <p><b>Global Search Regression</b> is licensed under the <a href="https://github.com/ParallelGSReg/GlobalSearchRegression.jl/blob/master/LICENSE.md" target="_blank" rel="license noopener">MIT License</a>.</p>
       </div>
 
    </footer>
@@ -31,8 +31,8 @@
       <ul class="server-status">
         <li><b>Server status:</b> <span v-if="server.ncores" class="online">Online</span><span v-else class="offline">Offline</span></li>
         <li v-if="server.ncores"><b>Julia version:</b> <span>{{ server.juliaVersion }}</span></li>
-        <li v-if="server.ncores"><b>GSReg version:</b> <span>{{ server.gsregVersion }}</span></li>
-        <li v-if="server.ncores"><b>GUI version:</b> <span>{{ $constants.VERSION }}</span></li>
+        <li v-if="server.ncores"><b>GlobalSearchRegression version:</b> <span>{{ server.gsregVersion }}</span></li>
+        <li v-if="server.ncores"><b>GlobalSearchRegressionGUI version:</b> <span>{{ $constants.VERSION }}</span></li>
         <li v-if="server.ncores"><b>Available workers:</b> <span>{{ server.nworkers }}</span></li>
       </ul>
     </div>

@@ -1,5 +1,5 @@
-module GSRegGUI
-using GSReg, WebSockets, DataStructures, Mux, HttpServer, HttpServer.mimetypes, HttpCommon, JSON, CSV
+module GlobalSearchRegressionGUI
+using GlobalSearchRegression, WebSockets, DataStructures, Mux, HttpServer, HttpServer.mimetypes, HttpCommon, JSON, CSV
 
 const SERVER_BASE_DIR = "../front/dist"
 const GSREG_VERSION = Pkg.installed("GSReg")
@@ -409,4 +409,4 @@ end
 
 export gui
 
-end # module GSRegGUI
+end # module GlobalSearchRegressionGUI
