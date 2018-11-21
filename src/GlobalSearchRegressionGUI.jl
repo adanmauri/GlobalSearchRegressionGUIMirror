@@ -2,7 +2,7 @@ module GlobalSearchRegressionGUI
 using GlobalSearchRegression, WebSockets, DataStructures, Mux, HttpServer, HttpServer.mimetypes, HttpCommon, JSON, CSV
 
 const SERVER_BASE_DIR = "../front/dist"
-const GSREG_VERSION = Pkg.installed("GSReg")
+const GSREG_VERSION = Pkg.installed("GlobalSearchRegression")
 
 mutable struct GSRegJob
     file # tempfile of data
@@ -12,7 +12,7 @@ mutable struct GSRegJob
     time_enqueued # time enqueued
     time_started
     time_finished
-    res::GSReg.GSRegResult # results array
+    res::GlobalSearchRegression.GSRegResult # results array
     GSRegJob(file, hash, options) = new(file, hash, options, string(Base.Random.uuid4()), time())
 end
 
@@ -128,10 +128,10 @@ function cloudLimits(data, options)
 end
 
 function constructCommand(options)
-    command = """Pkg.add("GSReg")
-using GSReg, CSV
+    command = """Pkg.add("GlobalSearchRegression")
+using GlobalSearchRegression, CSV
 data = CSV.read("yourcsvfile.csv")
-res = GSReg.gsreg("", data; opts...)"""
+res = GlobalSearchRegression.gsreg("", data; opts...)"""
 end
 
 """
