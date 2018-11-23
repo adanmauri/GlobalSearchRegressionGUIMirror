@@ -31,7 +31,6 @@ export default {
       intercept: false,
       time: null,
       residualtest: null,
-      keepwnoise: null,
       ttest: null,
       orderresults: null,
       modelavg: null,

@@ -33,7 +33,6 @@ const state = {
     intercept: null,
     time: null,
     residualtest: null,
-    keepwnoise: null,
     ttest: null,
     orderresults: null,
     modelavg: null,
@@ -77,9 +76,6 @@ const getters = {
   },
   getGSRegOptionsResidualtest (state) {
     return state.gsregOptions.residualtest
-  },
-  getGSRegOptionsKeepwnoise (state) {
-    return state.gsregOptions.keepwnoise
   },
   getGSRegOptionsTtest (state) {
     return state.gsregOptions.ttest
@@ -151,7 +147,6 @@ const mutations = {
     state.gsregOptions.intercept = false
     state.gsregOptions.time = null
     state.gsregOptions.residualtest = null
-    state.gsregOptions.keepwnoise = null
     state.gsregOptions.ttest = null
     state.gsregOptions.orderresults = null
     state.gsregOptions.modelavg = null
@@ -209,9 +204,6 @@ const mutations = {
   },
   setGSRegOptionsResidualtest (state, residualtest) {
     state.gsregOptions.residualtest = residualtest
-  },
-  setGSRegOptionsKeepwnoise (state, keepwnoise) {
-    state.gsregOptions.keepwnoise = keepwnoise
   },
   setGSRegOptionsTtest (state, ttest) {
     state.gsregOptions.ttest = ttest

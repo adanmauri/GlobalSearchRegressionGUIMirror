@@ -32,9 +32,6 @@
           <div class="col">
             <md-checkbox class="residualtest" v-model="residualtest" :checked="residualtest" title="Estimate residuals tests">Estimate residuals tests</md-checkbox>
           </div>
-          <div class="col">
-            <md-checkbox class="keepwnoise" v-model="keepwnoise" :checked="keepwnoise" :disabled="!residualtest" :hidden="!residualtest" title="Discard models without white noise residuals">Just white noise residuals</md-checkbox>
-          </div>
         </div>
         <div class="row">
           <div class="col">
@@ -142,7 +139,7 @@ export default {
   },
   computed: {
     ...mapState(['datanames']),
-    ...mapGetters(['getInputDataNobs', 'getServerNworkers', 'getGSRegOptionsExpvars', 'getGSRegOptionsIntercept', 'getGSRegOptionsResidualtest', 'getGSRegOptionsResidualtest', 'getGSRegOptionsKeepwnoise', 'getGSRegOptionsTtest', 'getGSRegOptionsOrderresults', 'getGSRegOptionsModelavg', 'getGSRegOptionsOutsample', 'getGSRegOptionsCsv', 'getGSRegOptionsMethod', 'getGSRegOptionsCriteria']),
+    ...mapGetters(['getInputDataNobs', 'getServerNworkers', 'getGSRegOptionsExpvars', 'getGSRegOptionsIntercept', 'getGSRegOptionsResidualtest', 'getGSRegOptionsResidualtest', 'getGSRegOptionsTtest', 'getGSRegOptionsOrderresults', 'getGSRegOptionsModelavg', 'getGSRegOptionsOutsample', 'getGSRegOptionsCsv', 'getGSRegOptionsMethod', 'getGSRegOptionsCriteria']),
     outsampleMax () {
       return utils.outsampleMax(this.getInputDataNobs, this.$constants.INSAMPLE_MIN_SIZE, this.getGSRegOptionsExpvars, this.getGSRegOptionsIntercept)
     },
@@ -162,18 +159,6 @@ export default {
       },
       set (value) {
         this.$store.commit('setGSRegOptionsResidualtest', value)
-        if (value !== true) {
-          this.$store.commit('setGSRegOptionsKeepwnoise', false)
-        }
-        this.updateSetStep()
-      }
-    },
-    keepwnoise: {
-      get () {
-        return this.getGSRegOptionsKeepwnoise
-      },
-      set (value) {
-        this.$store.commit('setGSRegOptionsKeepwnoise', value)
         this.updateSetStep()
       }
     },

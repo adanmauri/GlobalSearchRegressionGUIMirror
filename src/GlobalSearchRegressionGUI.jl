@@ -1,8 +1,8 @@
 module GlobalSearchRegressionGUI
-using GlobalSearchRegression, WebSockets, DataStructures, Mux, HttpServer, HttpServer.mimetypes, HttpCommon, JSON, CSV
+using GlobalSearchRegression, HTTP, WebSockets, DataStructures, Mux, JSON, CSV, Pkg, Distributed, UUIDs, Base64
 
 const SERVER_BASE_DIR = "../front/dist"
-const GSREG_VERSION = Pkg.installed("GlobalSearchRegression")
+const GSREG_VERSION = Pkg.installed()["GlobalSearchRegression"]
 
 mutable struct GSRegJob
     file # tempfile of data
@@ -13,7 +13,7 @@ mutable struct GSRegJob
     time_started
     time_finished
     res::GlobalSearchRegression.GSRegResult # results array
-    GSRegJob(file, hash, options) = new(file, hash, options, string(Base.Random.uuid4()), time())
+    GSRegJob(file, hash, options) = new(file, hash, options, string(uuid4()), time())
 end
 
 """
@@ -27,9 +27,9 @@ function enqueue_job(job::GSRegJob)
     job
 end
 
-function sendMessage(id::String, data)
+function sendMessage(id, data)
     global connections
-    if haskey(connections, id)
+    if haskey(connections, string(id))
         ws = connections[id]
         sendMessage(ws, data)
     end
@@ -50,12 +50,12 @@ function gsreg(job::GSRegJob)
         opt[:parallel] = job.options["paraprocs"]
 
         job.time_started = time()
-        job.res = GSReg.gsreg(job.options["depvar"] * " " * join(job.options["expvars"], " "), data; opt...,
+        job.res = GlobalSearchRegression.gsreg(job.options["depvar"] * " " * join(job.options["expvars"], " "), data; opt...,
                     onmessage = message -> sendMessage(job.hash, Dict("operation_id" => job.id, "message" => message)) )
         job.time_finished = time()
         push!(jobs_finished, Pair(job.id, job))
 
-        sendMessage(job.hash, Dict("operation_id" => job.id, "done" => true, "message" => "Successful operation", "result" => GSReg.to_dict(job.res)))
+        sendMessage(job.hash, Dict("operation_id" => job.id, "done" => true, "message" => "Successful operation", "result" => GlobalSearchRegression.to_dict(job.res)))
     catch e
         io = IOBuffer()
         showerror(io, e)
@@ -67,18 +67,17 @@ end
     Log request for analytics and debugging
 """
 function logRequest(app, req)
-    log = string(
-        task_local_storage(:ip), " ",
-        get(req[:headers], "Host", ""), " ",
-        get(req[:headers], "Origin", ""), " ",
-        Libc.strftime("%d/%b/%Y:%H:%M:%S %z", time()), " ",
-        "\"", req[:method], " ", req[:resource], "\"", " ",
-        size(req[:data],1), "B",
-        "\n")
-
-    open(joinpath(dirname(@__FILE__), "..", "access.log"), "a") do fp
-        write(fp, log)
-    end
+#     log = string(
+#         get(req[:headers], "Host", ""), " ",
+#         get(req[:headers], "Origin", ""), " ",
+#         Libc.strftime("%d/%b/%Y:%H:%M:%S %z", time()), " ",
+#         "\"", req[:method], " ", req[:resource], "\"", " ",
+#         size(req[:data],1), "B",
+#         "\n")
+#
+#     open(joinpath(dirname(@__FILE__), "..", "access.log"), "a") do fp
+#         write(fp, log)
+#     end
     app(req)
 end
 
@@ -100,16 +99,20 @@ end
     Setting CORS headers and parsing it to JSON
 """
 function toJsonWithCors(res, req)
-    headers  = HttpCommon.headers()
+    headers = []
+
+    push!(headers, "Server" => "Julia/$VERSION")
+    push!(headers, "Content-Type" => "text/html; charset=utf-8")
+
     if( req[:method] != "OPTIONS" )
-        headers["Content-Type"] = "application/json; charset=utf-8"
+        push!(headers, "Content-Type" => "application/json; charset=utf-8")
     end
-    headers["Access-Control-Allow-Headers"] = "X-User-Token, Content-Type"
-    headers["Access-Control-Allow-Origin"] = "*"
+    push!(headers, "Access-Control-Allow-Headers" => "X-User-Token, Content-Type")
+    push!(headers, "Access-Control-Allow-Origin" => "*")
 
     Dict(
         :headers => headers,
-        :body => (req[:method] == "OPTIONS") ? "" : JSON.json(res)
+        :body => codeunits((req[:method] == "OPTIONS") ? "" : JSON.json(res))
     )
 end
 
@@ -117,14 +120,11 @@ end
     Get Auth from header, and reply an error when it's not present
 """
 function authHeader(app, req)
-    if(haskey(req[:headers], "X-User-Token"))
-        req[:token] = get(req[:headers], "X-User-Token", "")
+    headers = Dict(req[:headers])
+    if(haskey(headers, "X-User-Token"))
+        req[:token] = get(headers, "X-User-Token", "")
     end
     app(req)
-end
-
-function cloudLimits(data, options)
-    error("The selected formula it's too large to be computed online. To perform this operation please install Julia and GSReg.jl in your local environment, initialize Julia and run the following command:" * constructCommand(options))
 end
 
 function constructCommand(options)
@@ -143,7 +143,6 @@ function validateInput!(opt)
         "intercept" => Bool,
         "time" => String,
         "residualtest" => Bool,
-        "keepwnoise" => Bool,
         "ttest" => Bool,
         "orderresults" => Bool,
         "modelavg" => Bool,
@@ -153,7 +152,7 @@ function validateInput!(opt)
     )
     for (name, value) in opt["options"]
         if value != nothing && name == "criteria"
-            push!(options, Pair(:criteria, Array{Symbol}(value)))
+            push!(options, Pair(:criteria, map(Symbol, value)))
         elseif value != nothing && name == "time"
             push!(options, Pair(:time, Symbol(value)))
         elseif value != nothing && name != "csv" && name != "resultscsv"
@@ -194,15 +193,8 @@ function upload(req)
         error("The file must be a valid CSV")
     end
 
-    # if we're in cloud solution, limit upload to 100MB
-    if ( haskey(ENV, "ENVIRONMENT") && ENV["ENVIRONMENT"] == "cloud" )
-        if ( filesize(tempfile) > 100 * (1000 ^ 2) )
-            error("Max filesize (100MB) exceeded")
-        end
-    end
-
     global files_dict
-    id = string(Base.Random.uuid4())
+    id = string(uuid4())
     push!(files_dict, Pair(id, tempfile))
 
     Dict(
@@ -215,7 +207,7 @@ end
 function server_info(req)
     global job_queue
     Dict(
-        "ncores" => Sys.CPU_CORES,
+        "ncores" => Sys.CPU_THREADS,
         "nworkers" => nworkers(),
         "gsreg_version" => string(GSREG_VERSION),
         "julia_version" => string(VERSION),
@@ -256,11 +248,6 @@ function solve(req)
     # validate correct use of options
     validateInput!(options)
 
-    # if we're in cloud solution, skip computations larger than our capabilities
-    if ( haskey(ENV, "ENVIRONMENT") && ENV["ENVIRONMENT"] == "cloud" )
-        cloudLimits(data, options)
-    end
-
     # Enqueue the job
     job = GSRegJob(tempfile, req[:token], options)
     enqueue_job(job)
@@ -272,36 +259,29 @@ function solve(req)
     )
 end
 
-
-"""
- This WebSocket handler mantain a collection of ws opened with the user id.
-"""
-function wsapp(req, ws)
-    global connections
-    while isopen(ws)
-        msg, = readguarded(ws)
-        try
-            msg = JSON.parse(String(copy(msg)))
-            id = msg["user-token"]
-            connections[id] = ws
-            sendMessage(ws, Dict("ok" => true, "message" => "Waiting in queue"))
-        catch
-            sendMessage(ws, Dict("ok" => false, "message" => "The next message must be in JSON format"))
-        end
-    end
-    # TODO: find some way for delete connection with any reference
-    # delete!(connections, id)
-end
-
 function validpath(path; dirs = true)
     return true # fallback index.html will manage this
     (isfile(path) || (dirs && isdir(path))) || isfile(joinpath(path,"index.html"))
 end
 
 ormatch(r::RegexMatch, x) = r.match
-ormatch(r::Void, x) = x
+ormatch(nothing, x) = x
 
 extension(f) = ormatch(match(r"(?<=\.)[^\.\\/]*$", f), "")
+
+mimetypes = Dict{AbstractString,AbstractString}([
+    ("jpg", "image/jpeg"),
+    ("png", "image/png"),
+    ("html", "text/html"),
+    ("csv", "text/csv"),
+    ("css", "text/css"),
+    ("js", "application/javascript"),
+    ("ttf", "application/x-font-ttf"),
+    ("svg", "image/svg+xml"),
+    ("mp4", "video/mp4"),
+    ("ico", "image/x-icon"),
+    ("map", "text/plain")
+])
 
 fileheaders(f) = Dict("Content-Type" => get(mimetypes, extension(f), "application/octet-stream"))
 
@@ -329,7 +309,7 @@ function result_file(req)
             filename = "gsreg" * Libc.strftime("%d/%b/%Y%H%M%S", time()) * ".csv"
         end
         Dict(
-            :body => String(csv),
+            :body => String(take!(csv)),
             :headers => Dict("Content-Type" => "application/octet-stream", "Content-Disposition" => "attachment; filename=$filename")
         )
     else
@@ -337,23 +317,11 @@ function result_file(req)
     end
 end
 
-# take the remote addr for logging
-function handle_connect(client)
-    try
-        buffer = Array{UInt8}(32)
-        bufflen::Int64 = 32
-        ccall(:uv_tcp_getpeername, Int64, (Ptr{Void},Ptr{UInt8},Ptr{Int64}), client.sock.handle, buffer, &bufflen)
-        peername::IPv4 = IPv4(buffer[5:8]...)
-        task_local_storage(:ip,peername)
-    catch e
-        println("Error ... $e")
-    end
-end
-
 files_dict = Dict{String,String}()
 jobs_finished = Dict{String,GSRegJob}()
 
-job_queue = Queue(GSRegJob)
+job_queue = Queue{GSRegJob}()
+
 job_queue_cond = Condition()
 
 # Array of connections based in user token
@@ -365,8 +333,25 @@ function gui(;openbrowser=true, port=45872, cloud=false, log=false)
     global job_queue_cond
     global job_queue
 
+    #Consume job_queue after notification
+    function consume_job_queue()
+        while true
+            wait(job_queue_cond)
+            while !(isempty(job_queue))
+#                 try
+                    gsreg(dequeue!(job_queue))
+#                 catch
+#                     println("Error executing gsreg job")
+#                 end
+            end
+        end
+    end
+
+    schedule(Task(consume_job_queue))
+
     @app app = (
         stack(Mux.todict, logRequest, Mux.splitquery, errorCatch, authHeader, Mux.toresponse),
+        page("/info", respond("<h1>info</h1>")),
         page("/upload", req -> toJsonWithCors(upload(req), req)),
         page("/server-info", req -> toJsonWithCors(server_info(req), req)),
         page("/result/:id", req -> result_file(req)),
@@ -375,35 +360,41 @@ function gui(;openbrowser=true, port=45872, cloud=false, log=false)
         Mux.notfound
     )
 
-    handler(req, res) = app.warez(req)
-
-    http_handler = HttpHandler(handler)
-    http_handler.events["connect"] = (client)  -> handle_connect(client)
-    http_handler.events["listen"] = (address)  -> println("Click here http://$address or Copy & Paste the link in your browser to launch the GSReg Graphic User Interface")
-
-    server = Server(http_handler, WebSocketHandler(wsapp))
-
-    #Consume job_queue after notification
-    @schedule begin
-        while true
-            wait(job_queue_cond)
-            while !(isempty(job_queue))
-                try
-                    gsreg(dequeue!(job_queue))
-                catch
-                    println("Error executing gsreg job")
-                end
+    """
+     This WebSocket handler mantain a collection of ws opened with the user id.
+    """
+    function wshandler(ws)
+        global connections
+        while isopen(ws)
+            msg, = readguarded(ws)
+            try
+                msg = JSON.parse(String(copy(msg)))
+                id = msg["user-token"]
+                connections[id] = ws
+                sendMessage(ws, Dict("ok" => true, "message" => "Waiting in queue"))
+            catch
+                sendMessage(ws, Dict("ok" => false, "message" => "The next message must be in JSON format"))
             end
         end
+        # TODO: find some way for delete connection with any reference
+        # delete!(connections, id)
+        # close(ws)
     end
 
-    serve(server, port = port, host = ip"127.0.0.1" )
+    wsapp = Mux.App(Mux.mux(
+        Mux.wdefaults,
+        Mux.route("/ws", req -> wshandler(req[:socket])),
+        Mux.wclose,
+        Mux.notfound(),
+    ))
+
+    @async Mux.serve(app, wsapp, port)
 
     if(openbrowser)
-        url = "http://127.0.0.1:" * string(port);
-        start = (is_apple() ? "open" : is_windows() ? "start": "xdg-open");
+        url = "http://127.0.0.1:" * string(port)
+        start = ( Sys.isapple() ? "open" : Sys.iswindows() ? "start" : "xdg-open" )
         sleep(3)
-        run(Cmd([start,url]));
+        run(Cmd([start,url]))
     end
 end
 

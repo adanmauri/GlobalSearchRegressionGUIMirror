@@ -10,7 +10,7 @@ export default {
   },
   'VERSION': '0.1.0',
   'WS': {
-    'url': 'ws://localhost:45872'
+    'url': 'ws://localhost:45872/ws'
   },
   'INSAMPLE_MIN_SIZE': 20,
   'STEPS': [

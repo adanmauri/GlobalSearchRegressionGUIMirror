@@ -27,8 +27,6 @@
                                                 :key="index">{{ $constants.CRITERIA[criteria] }}</span></li>
             <li><b>Estimate residuals tests: </b><span v-if="gsregOptions.residualtest">Yes</span><span v-else>No</span>
             </li>
-            <li v-if="gsregOptions.residualtest"><b>Just white noise residuals: </b><span
-              v-if="gsregOptions.keepwnoise">Yes</span><span v-else>No</span></li>
             <li><b>Estimate t-test: </b><span v-if="gsregOptions.ttest">Yes</span><span v-else>No</span></li>
           </ul>
         </div>
