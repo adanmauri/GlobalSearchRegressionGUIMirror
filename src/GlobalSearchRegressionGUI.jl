@@ -392,9 +392,13 @@ function gui(;openbrowser=true, port=45872, cloud=false, log=false)
 
     if(openbrowser)
         url = "http://127.0.0.1:" * string(port)
-        start = ( Sys.isapple() ? "open" : Sys.iswindows() ? "start" : "xdg-open" )
         sleep(3)
-        run(Cmd([start,url]))
+        if Sys.iswindows()
+            run(string("cmd /c start ", url))
+        else
+            start = ( Sys.isapple() ? "open" : "xdg-open" )
+            run(Cmd([start,url]))
+        end
     end
 end
 
