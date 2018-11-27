@@ -97,7 +97,7 @@ deps = ["DataFrames", "DelimitedFiles", "Distributed", "Distributions", "LinearA
 git-tree-sha1 = "51bcce20919686b0e572d95266e20e6f0774e7df"
 repo-rev = "master"
 repo-url = "https://github.com/ParallelGSReg/GlobalSearchRegression.jl.git"
-uuid = "72de06b2-c1fe-11e8-2173-617efb64043c"
+uuid = "5b3bc22e-96cb-5e8b-bdf1-153217652f04"
 version = "1.0.0"
 
 [[HTTP]]
