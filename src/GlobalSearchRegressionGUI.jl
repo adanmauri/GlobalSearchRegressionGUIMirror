@@ -394,7 +394,7 @@ function gui(;openbrowser=true, port=45872, cloud=false, log=false)
         url = "http://127.0.0.1:" * string(port)
         sleep(3)
         if Sys.iswindows()
-            run(string("cmd /c start ", url))
+            run(`cmd /c start $url`)
         else
             start = ( Sys.isapple() ? "open" : "xdg-open" )
             run(Cmd([start,url]))
