@@ -180,9 +180,11 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[Mux]]
 deps = ["AssetRegistry", "Base64", "HTTP", "Hiccup", "Lazy", "Pkg", "Sockets", "Test", "WebSockets"]
-git-tree-sha1 = "487feb060cdd5cc152ef4f75b3cb565c0dc4300a"
+git-tree-sha1 = "ee789c21668797979cc9d1cd6578761a13f0fbea"
+repo-rev = "99ce1faab46ec5f8712d46b779c10224bba806db"
+repo-url = "https://github.com/JuliaWeb/Mux.jl.git"
 uuid = "a975b10e-0019-58db-a62f-e48ff68538c9"
-version = "0.5.3"
+version = "0.5.3+"
 
 [[OrderedCollections]]
 deps = ["Random", "Serialization", "Test"]
