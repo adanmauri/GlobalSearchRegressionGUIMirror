@@ -1,5 +1,4 @@
 name = "GlobalSearchRegressionGUI"
-uuid = "847a8074-eeae-11e8-00bc-557836e95f1a"
 authors = ["Demian Panigo <panigo@gmail.com>", "Valentin Mari <valentinmari@hotmail.com>", "Adán Mauri Ungaro <adan.mauri@gmail.com>"]
 version = "0.1.0"
 
